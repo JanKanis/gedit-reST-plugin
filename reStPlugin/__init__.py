@@ -210,12 +210,6 @@ class restPlugin(gedit.Plugin):
         text = doc.get_text(start, end)
         html = publish_parts(text, writer_name="html")["html_body"]
 
-        ## Sortie
-        sortie = '\n'.join([START_HTML,html,END_HTML])
-        fs = open('sortie.html','w')
-        fs.write(sortie)
-        fs.close()
-
         p = windowdata["bottom_panel"].get_placement()
 
         html_doc = windowdata["html_doc"]
