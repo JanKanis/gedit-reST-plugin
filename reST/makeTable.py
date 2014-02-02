@@ -5,7 +5,8 @@
 # and modified a little bit to suit my needs.
 # In particualr, it now handles accented chars correctly using unicode.
 
-import cStringIO,operator
+import io
+import operator
 
 def indent(rows, hasHeader=False, headerChar='-', delim=' | ', justify='left',
            separateRows=False, prefix='', postfix='', wrapfunc=lambda x:x):
@@ -37,7 +38,7 @@ def indent(rows, hasHeader=False, headerChar='-', delim=' | ', justify='left',
                                  len(delim)*(len(maxWidths)-1))
     # select the appropriate justify method
     justify = {'center':str.center, 'right':str.rjust, 'left':str.ljust}[justify.lower()]
-    output=cStringIO.StringIO()
+    output = io.StringIO()
     if separateRows: print >> output, rowSeparator
     for physicalRows in logicalRows:
         for row in physicalRows:
@@ -119,4 +120,4 @@ WriteMode,Non,Oui,Début de fichier,Le fichier est effacé s'il existe déjà
 ReadWriteMode,Oui,Oui,Début de fichier,Le fichier est créé s'il n'existe pas. Sinon son contenu est gardé intact'''
     rows = [row.strip().split(',')  for row in data.splitlines()]
 
-    print toRSTtable([labels]+rows)
+    print(toRSTtable([labels]+rows))

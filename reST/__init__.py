@@ -19,12 +19,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-import gedit
+from gi.repository import Gedit, GObject, Gtk, WebKit
 
 import os
-import sys
-import gtk
-import gtkhtml2
 
 from gettext import gettext as _
 from makeTable import toRSTtable
@@ -85,10 +82,10 @@ ui_str = """<ui>
 </ui>
 """
 
-class restPlugin(gedit.Plugin):
+class restPlugin(GObject.Object, Gedit.WindowActivatable):
 
     def __init__(self):
-        gedit.Plugin.__init__(self)
+        GObject.Object.__init__(self)
 
     def activate(self, window):
         ## TODO : Maybe have to check the filetype ?
@@ -99,13 +96,13 @@ class restPlugin(gedit.Plugin):
         windowdata = dict()
         window.set_data("reStPreviewData", windowdata)
 
-        scrolled_window = gtk.ScrolledWindow()
-        scrolled_window.set_property("hscrollbar-policy",gtk.POLICY_AUTOMATIC)
-        scrolled_window.set_property("vscrollbar-policy",gtk.POLICY_AUTOMATIC)
-        scrolled_window.set_property("shadow-type",gtk.SHADOW_IN)
+        scrolled_window = Gtk.ScrolledWindow()
+        scrolled_window.set_property("hscrollbar-policy", Gtk.POLICY_AUTOMATIC)
+        scrolled_window.set_property("vscrollbar-policy", Gtk.POLICY_AUTOMATIC)
+        scrolled_window.set_property("shadow-type", Gtk.SHADOW_IN)
 
-        html_view = gtkhtml2.View()
-        html_doc = gtkhtml2.Document()
+        html_view = WebKit.View()
+        html_doc = WebKit.Document()
         html_view.set_document(html_doc)
 
         html_doc.clear()
@@ -121,8 +118,8 @@ class restPlugin(gedit.Plugin):
         scrolled_window.show_all()
 
         bottom = window.get_bottom_panel()
-        image = gtk.Image()
-        image.set_from_icon_name("gnome-mime-text-html", gtk.ICON_SIZE_MENU)
+        image = Gtk.Image()
+        image.set_from_icon_name("gnome-mime-text-html", Gtk.ICON_SIZE_MENU)
         bottom.add_item(scrolled_window, "reSt Preview", image)
         windowdata["bottom_panel"] = scrolled_window
         windowdata["html_doc"] = html_doc
@@ -130,8 +127,8 @@ class restPlugin(gedit.Plugin):
         manager = window.get_ui_manager()
 
         ## Added later
-        separator = gtk.SeparatorMenuItem()
-        self._action_group = gtk.ActionGroup("reStPluginActions")
+        separator = Gtk.SeparatorMenuItem()
+        self._action_group = Gtk.ActionGroup("reStPluginActions")
         self._action_group.add_actions([("preview", None, _("reSt preview"),
                                          "<Control><Shift>R", _("reSt preview"),
                                          self.on_update_preview),
@@ -246,7 +243,7 @@ class restPlugin(gedit.Plugin):
         if not doc:
             return
 
-        lines = gtk.clipboard_get().wait_for_text().split('\n')
+        lines = Gtk.clipboard_get().wait_for_text().split('\n')
         to_copy = "\n".join([line for line in lines[1:]])
         doc.insert_at_cursor('..sourcecode:: ChoosenLanguage\n\n    %s\n'%lines[0])
         doc.insert_at_cursor(to_copy + '\n\n')
