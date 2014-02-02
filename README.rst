@@ -40,7 +40,7 @@ You should then obtain something like this : ::
                 makeTable.py
                 etc.
 
-Using
+Usage
 -----
 
 Activate the plugin via Edit/Preferences/Plugins and turn the
@@ -55,7 +55,7 @@ Shortcuts
 There's only one shortcut for the moment, maybe I'll create some others in the
 future.
 
-``Ctrl+Maj+R`` : is used to refresh the generated HTML view inside 
+``Ctrl+Shift+R`` : is used to refresh the generated HTML view inside
 ``reSt Preview`` pane. If there's some selected text, the conversion process
 will only apply on it. If there's no selection, the entire document is 
 processed. It may be usefull for testing.
