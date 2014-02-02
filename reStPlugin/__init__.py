@@ -20,12 +20,11 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 import gedit
+
 import os
 import sys
 import gtk
 import gtkhtml2
-import gnomevfs
-import subprocess
 
 from gettext import gettext as _
 from makeTable import toRSTtable
@@ -86,8 +85,6 @@ ui_str = """<ui>
 </ui>
 """
 
-ALLOWED_SCHEME = ('http', 'https', 'ftp', 'ftps', 'mailto', 'file')
-
 class restPlugin(gedit.Plugin):
 
     def __init__(self):
@@ -109,8 +106,6 @@ class restPlugin(gedit.Plugin):
 
         html_view = gtkhtml2.View()
         html_doc = gtkhtml2.Document()
-        html_doc.connect('request-url', self.request_url)
-        html_doc.connect('link-clicked', self.link_clicked)
         html_view.set_document(html_doc)
 
         html_doc.clear()
@@ -131,7 +126,6 @@ class restPlugin(gedit.Plugin):
         bottom.add_item(scrolled_window, "reSt Preview", image)
         windowdata["bottom_panel"] = scrolled_window
         windowdata["html_doc"] = html_doc
-        windowdata["html_view"] = html_view
 
         manager = window.get_ui_manager()
 
@@ -170,72 +164,12 @@ class restPlugin(gedit.Plugin):
 
         # Remove the menu action
         manager = window.get_ui_manager()
-        manager.remove_ui(windowdata["ui_id"])
+        manager.remove_action_ui(windowdata["ui_id"])
         manager.remove_action_group(windowdata["action_group"])
 
         # Remove the bottom panel
         bottom = window.get_bottom_panel()
         bottom.remove_item(windowdata["bottom_panel"])
-
-    def request_url(self, doc, url, stream):
-        gdoc = self._window.get_active_document()
-        if not gdoc:
-            source_path = None
-        else:
-            source_path = gdoc.get_location()
-            if source_path:
-                source_path = gnomevfs.URI(source_path.get_uri())
-
-        if source_path:
-            url = source_path.resolve_relative(url)
-
-        try:
-            f = gnomevfs.open(url, gnomevfs.OPEN_READ)
-        except:
-            print "Error opening url", url
-            stream.close()
-            return
-
-        while True:
-            try:
-                stream.write(f.read (1024))
-            except gnomevfs.EOFError:
-                break
-        f.close()
-        stream.close()
-
-    def link_clicked(self, object, link):
-        # Retreive the data of the window object
-        windowdata = self._window.get_data("reStPreviewData")
-
-        if link.startswith('#'):
-            windowdata['html_view'].jump_to_anchor(link)
-            return
-
-        gdoc = self._window.get_active_document()
-        if not gdoc:
-            source_path = None
-        else:
-            source_path = gdoc.get_location()
-            if source_path:
-                source_path = gnomevfs.URI(source_path.get_uri())
-
-        if source_path:
-            url = source_path.resolve_relative(link)
-        else:
-            url = gnomevfs.URI(link)
-
-        command = ['gnome-open', str(url)]
-
-        # Avoid to run the browser as user root
-        if os.getuid() == 0 and os.environ.has_key('SUDO_USER'):
-            command = ['sudo', '-u', os.environ['SUDO_USER']] + command
-
-        if url.scheme in ALLOWED_SCHEME:
-            subprocess.Popen(command)
-            return
-
-        print "clicked = %r" % link
 
     def getSelection(self, window):
         windowdata = window.get_data("reStPreviewData")
@@ -264,14 +198,6 @@ class restPlugin(gedit.Plugin):
         if not view:
              return
 
-        gdoc = self._window.get_active_document()
-        if not gdoc:
-            source_path = None
-        else:
-            source_path = gdoc.get_location()
-            if source_path:
-                source_path = source_path.get_path()
-
         doc = view.get_buffer()
 
         start = doc.get_start_iter()
@@ -282,7 +208,13 @@ class restPlugin(gedit.Plugin):
             end = doc.get_iter_at_mark(doc.get_selection_bound())
 
         text = doc.get_text(start, end)
-        html = publish_parts(text, source_path=source_path, writer_name="html")["html_body"]
+        html = publish_parts(text, writer_name="html")["html_body"]
+
+        ## Sortie
+        sortie = '\n'.join([START_HTML,html,END_HTML])
+        fs = open('sortie.html','w')
+        fs.write(sortie)
+        fs.close()
 
         p = windowdata["bottom_panel"].get_placement()
 
