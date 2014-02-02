@@ -15,11 +15,11 @@ Dépendances
 Installation
 ------------
 
-Placez le fichier ``reSt.gedit-plugin`` dans votre dossier plugins de Gedit.
+Placez le fichier ``reST.plugin`` dans votre dossier plugins de Gedit.
 Le mien se situe ici par exemple :
 /home/kib/.gnome2/gedit/plugins
 
-Ensuite, copier /coller le dossier nommé ``reStPlugin`` dans ce même 
+Ensuite, copier /coller le dossier nommé ``reST`` dans ce même 
 répertoire.
 
 Les fichiers Readme.rst et Readme.odt ne sont là que pour vous aider, vous 
@@ -28,8 +28,8 @@ pourrez ensuite les placer à la poubelle si le coeur vous en dit !
 L'arborescence devrait donc être la suivante : ::
 
     .../plugins/
-            reSt.gedit-plugin
-            reStPlugin/
+            reST.plugin
+            reST/
                 __init__.py
                 makeTable.py
                 etc.

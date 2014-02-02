@@ -317,11 +317,11 @@ color:#E5E5E5;
 <h1 class="title">reStructuredText plugin</h1>
 
 <p>This is a little how-to for using the reStructuredText plugin inside
-<a class="reference external" href="http://www.gnome.org/projects/gedit/">GEdit</a> .</p>
+<a class="reference external" href="https://wiki.gnome.org/Apps/Gedit">GEdit</a> .</p>
 <a class="reference external image-reference" href="http://farm3.static.flickr.com/2247/2259897529_aa85f5f540_b.jpg"><div align="center" class="align-center"><img alt="reSt Plugin Image" class="align-center" src="http://farm3.static.flickr.com/2256/2259897373_d47ecf0983_o_d.png" /></div>
 </a>
-<div class="section" id="d-pendancies">
-<h1>Dépendancies</h1>
+<div class="section" id="dependencies">
+<h1>Dependencies</h1>
 <ul class="simple">
 <li><a class="reference external" href="http://www.python.org/">Python</a> : version &gt;= 2.5;</li>
 <li><a class="reference external" href="http://pygments.org/">Pygments</a> : take the latest version;</li>
@@ -333,16 +333,17 @@ color:#E5E5E5;
 <h1>Installation</h1>
 <p>Unpack the zip file where you wanted to then :</p>
 <ul class="simple">
-<li>Put <tt class="docutils literal"><span class="pre">reSt.gedit-plugin</span></tt> file in Gedit's plugins directory.
-Mine is (under Ubuntu Gutsy): <tt class="docutils literal"><span class="pre">/home/kib/.gnome2/gedit/plugins</span></tt></li>
-<li>Copy/Paste the <tt class="docutils literal"><span class="pre">reStPlugin</span></tt> folder inside <tt class="docutils literal"><span class="pre">/home/kib/.gnome2/gedit/plugins</span></tt>.</li>
+<li>Put <tt class="docutils literal"><span class="pre">reST.plugin</span></tt> file in Gedit's plugins directory.
+Mine is (under Ubuntu Gutsy): <tt class="docutils literal"><span class="pre">/home/kib/.gnome2/gedit/plugins</span></tt>.
+The global directory is <tt class="docutils literal"><span class="pre">/usr/lib/i386-linux-gnu/gedit/plugins</span></tt>.</li>
+<li>Copy/Paste the <tt class="docutils literal"><span class="pre">reST</span></tt> folder inside <tt class="docutils literal"><span class="pre">/home/kib/.gnome2/gedit/plugins</span></tt>.</li>
 </ul>
 <p>Readme.rst and Readme.odt are just help files, you can do whatever you want with them.</p>
 <p>You should then obtain something like this :</p>
 <pre class="literal-block">
 .../plugins/
-        reSt.gedit-plugin
-        reStPlugin/
+        reST.plugin
+        reST/
             __init__.py
             makeTable.py
             etc.
@@ -350,7 +351,7 @@ Mine is (under Ubuntu Gutsy): <tt class="docutils literal"><span class="pre">/ho
 </div>
 <div class="section" id="using">
 <h1>Using</h1>
-<p>Activate the plugin via Edit/Préférences/Plugins and turn the
+<p>Activate the plugin via Edit/Preferences/Plugins and turn the
 <tt class="docutils literal"><span class="pre">reStructuredText</span> <span class="pre">plugin</span></tt> box on.</p>
 <p>The plugin is now activated, and you should have a new panel inside the
 bottom pane named <tt class="docutils literal"><span class="pre">reSt</span> <span class="pre">Preview</span></tt>.</p>

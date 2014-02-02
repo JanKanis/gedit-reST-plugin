@@ -2,7 +2,7 @@ reStructuredText plugin
 =======================
 
 This is a little how-to for using the reStructuredText plugin inside 
-`GEdit <http://www.gnome.org/projects/gedit/>`_ .
+`GEdit <https://wiki.gnome.org/Apps/Gedit>`_ .
 
 .. image:: http://farm3.static.flickr.com/2256/2259897373_d47ecf0983_o_d.png
     :scale: 100
@@ -11,7 +11,7 @@ This is a little how-to for using the reStructuredText plugin inside
     :target: http://farm3.static.flickr.com/2247/2259897529_aa85f5f540_b.jpg
 
 
-Dépendancies
+Dependencies
 ------------
 
 - `Python <http://www.python.org/>`_ : version >= 2.5;
@@ -23,18 +23,19 @@ Installation
 ------------
 Unpack the zip file where you wanted to then :
 
-- Put ``reSt.gedit-plugin`` file in Gedit's plugins directory.
-  Mine is (under Ubuntu Gutsy): ``/home/kib/.gnome2/gedit/plugins``
+- Put ``reST.plugin`` file in Gedit's plugins directory.
+  Mine is (under Ubuntu Gutsy): ``/home/kib/.gnome2/gedit/plugins``.
+  The global directory is ``/usr/lib/i386-linux-gnu/gedit/plugins``.
 
-- Copy/Paste the ``reStPlugin`` folder inside ``/home/kib/.gnome2/gedit/plugins``.
+- Copy/Paste the ``reST`` folder inside ``/home/kib/.gnome2/gedit/plugins``.
 
 Readme.rst and Readme.odt are just help files, you can do whatever you want with them.
 
 You should then obtain something like this : ::
 
     .../plugins/
-            reSt.gedit-plugin
-            reStPlugin/
+            reST.plugin
+            reST/
                 __init__.py
                 makeTable.py
                 etc.
@@ -42,7 +43,7 @@ You should then obtain something like this : ::
 Using
 -----
 
-Activate the plugin via Edit/Préférences/Plugins and turn the
+Activate the plugin via Edit/Preferences/Plugins and turn the
 ``reStructuredText plugin`` box on.
 
 The plugin is now activated, and you should have a new panel inside the 
