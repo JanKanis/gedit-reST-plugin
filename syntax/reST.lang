@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Author: Jean-Philippe Fleury
+ Copyright (C) 2011 Jean-Philippe Fleury <contact@jpfleury.net>
+
+ GtkSourceView is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ GtkSourceView is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+-->
+<!-- Note: this language definition file adds support for Python
+     reStructuredText syntax, taken from the following websites:
+     * <http://ubuntuforums.org/showthread.php?t=1868181>
+     * <https://mail.gnome.org/archives/gedit-list/2011-May/msg00012.html>
+-->
+<!DOCTYPE language SYSTEM "language.dtd">
+<language _name="reStructuredText" version="1.0" _section="Markup" mimetypes="text/restructured">
+
+	<pattern-item _name="Emphasis" style="Preprocessor">
+		<regex>(\*[^*\n]*\*)</regex>
+	</pattern-item>
+	
+	<pattern-item _name="Strong Emphasis" style="Data Type">
+		<regex>(\*\*[^*\n]*\*\*)</regex>
+	</pattern-item>
+
+	<pattern-item _name="Link" style="String">
+		<regex>`[^`]*`_</regex>
+	</pattern-item>
+	
+	<pattern-item _name="WikiLink" style="Link">
+		<regex>\[\[[^\n]+\]\]</regex>
+	</pattern-item>
+	
+	<pattern-item _name="List item" style="Keyword">
+		<regex>(^ *\*[ \t]+)|(^ *[0-9]+\.[ \t]+)</regex>
+	</pattern-item>
+	
+	<pattern-item _name="Line" style="Data Type">
+		<regex>^[ \t]*[-=]+[ \t]*$</regex>
+	</pattern-item>
+	
+	<pattern-item _name="Automatic link" style="String" end-at-line-end = "TRUE">
+		<regex>(&lt;[A-Za-z._0-9]+@[A-Za-z0-9]+.[A-Za-z]+&gt;)|(&lt;[a-z]+://[^ \n]+&gt;)</regex>
+	</pattern-item>
+
+	<block-comment _name = "Code block" style= "Comment">
+	    <start-regex>::\n\n    </start-regex>
+	    <end-regex>\n\n</end-regex>
+	</block-comment>
+	
+	<pattern-item _name="Inline Code" style="Comment">
+		<regex>``[^``]*``</regex>
+	</pattern-item>
+
+	<string _name="Directive" style="Comment">
+	    <start-regex>^\.\. </start-regex>
+	    <end-regex>$</end-regex>
+	</string>
+
+</language>
