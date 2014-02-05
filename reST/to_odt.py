@@ -18,7 +18,7 @@ except:
 from docutils.core import publish_cmdline, default_description, \
     Publisher, default_usage
 from docutils import io
-from docutils.writers.odtwriter import Writer
+from docutils.writers.odf_odt import Writer
 
 
 description = ('Generates Docutils-native XML from standalone '
@@ -32,11 +32,10 @@ class BinaryFileOutput(io.FileOutput):
     def open(self):
         try:
             self.destination = open(self.destination_path, 'wb')
-        except IOError, error:
+        except IOError as error:
             if not self.handle_io_errors:
                 raise
-            print >>sys.stderr, '%s: %s' % (error.__class__.__name__,
-                                            error)
+            print >>sys.stderr, '%s: %s' % (error.__class__.__name__, error)
             print >>sys.stderr, ('Unable to open destination file for writing '
                                  '(%r).  Exiting.' % self.destination_path)
             sys.exit(1)
