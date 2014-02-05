@@ -9,3 +9,13 @@ highlighting for all langages in GEdit)::
 
 Then you can switch the highlighting manually in the footer bar of GEdit.
 
+Official Repository
+-------------------
+
+You can find all language specs officially supported by GtkSourceView, including
+the latest version of `rest.lang`_, in the official `GNOME repository`_.
+Additional language definitions may be available from the `GNOME Wiki`_.
+
+.. _`rest.lang`: https://git.gnome.org/browse/gtksourceview/tree/data/language-specs/rst.lang
+.. _`GNOME repository`: https://git.gnome.org/browse/gtksourceview/tree/data/language-specs/
+.. _`GNOME Wiki`: https://wiki.gnome.org/Projects/GtkSourceView/LanguageDefinitions

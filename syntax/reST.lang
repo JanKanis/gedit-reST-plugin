@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
- Author: Jean-Philippe Fleury
- Copyright (C) 2011 Jean-Philippe Fleury <contact@jpfleury.net>
+ This file is part of GtkSourceView
+
+ Author: Guillaume Chéreau <guillaume.chereau@gmail.com>
 
  GtkSourceView is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -19,54 +20,123 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 -->
-<!-- Note: this language definition file adds support for Python
-     reStructuredText syntax, taken from the following websites:
-     * <http://ubuntuforums.org/showthread.php?t=1868181>
-     * <https://mail.gnome.org/archives/gedit-list/2011-May/msg00012.html>
--->
-<!DOCTYPE language SYSTEM "language.dtd">
-<language _name="reStructuredText" version="1.0" _section="Markup" mimetypes="text/restructured">
+<language id="rst" _name="reStructuredText" version="2.0" _section="Markup">
+  <metadata>
+    <property name="mimetypes">text/x-rst</property>
+    <property name="globs">*.rst</property>
+    <property name="line-comment-start">..\u0020</property>
+  </metadata>
 
-	<pattern-item _name="Emphasis" style="Preprocessor">
-		<regex>(\*[^*\n]*\*)</regex>
-	</pattern-item>
-	
-	<pattern-item _name="Strong Emphasis" style="Data Type">
-		<regex>(\*\*[^*\n]*\*\*)</regex>
-	</pattern-item>
+  <styles>
+    <style id="header" _name="Header" map-to="def:type"/>
+    <style id="emphasis" _name="Emphasis" map-to="def:doc-comment-element"/>
+    <style id="strong-emphasis" _name="Strong Emphasis" map-to="def:statement"/>
+    <style id="bullet" _name="Bullet" map-to="def:preprocessor"/>
+    <style id="directive" _name="Directive" map-to="def:constant"/>
+    <style id="comment" _name="Comment" map-to="def:comment"/>
+    <style id="link" _name="Link" map-to="def:type"/>
+    <style id="substitution" _name="Substitution" map-to="def:type"/>
+    <style id="code" _name="Code" map-to="def:identifier"/>
+    <style id="url" name="Url" map-to="def:underlined"/>
+  </styles>
 
-	<pattern-item _name="Link" style="String">
-		<regex>`[^`]*`_</regex>
-	</pattern-item>
-	
-	<pattern-item _name="WikiLink" style="Link">
-		<regex>\[\[[^\n]+\]\]</regex>
-	</pattern-item>
-	
-	<pattern-item _name="List item" style="Keyword">
-		<regex>(^ *\*[ \t]+)|(^ *[0-9]+\.[ \t]+)</regex>
-	</pattern-item>
-	
-	<pattern-item _name="Line" style="Data Type">
-		<regex>^[ \t]*[-=]+[ \t]*$</regex>
-	</pattern-item>
-	
-	<pattern-item _name="Automatic link" style="String" end-at-line-end = "TRUE">
-		<regex>(&lt;[A-Za-z._0-9]+@[A-Za-z0-9]+.[A-Za-z]+&gt;)|(&lt;[a-z]+://[^ \n]+&gt;)</regex>
-	</pattern-item>
+  <definitions>
 
-	<block-comment _name = "Code block" style= "Comment">
-	    <start-regex>::\n\n    </start-regex>
-	    <end-regex>\n\n</end-regex>
-	</block-comment>
-	
-	<pattern-item _name="Inline Code" style="Comment">
-		<regex>``[^``]*``</regex>
-	</pattern-item>
+    <context id="directive" class="no-spell-check" style-ref="directive">
+      <match>^\s*\.\. .*::.*$</match>
+    </context>
 
-	<string _name="Directive" style="Comment">
-	    <start-regex>^\.\. </start-regex>
-	    <end-regex>$</end-regex>
-	</string>
+    <context id="footnotes" style-ref="directive">
+      <match>^\s*\.\. \[.+\] .*$</match>
+    </context>
+
+    <context id="link-target" class="no-spell-check" style-ref="directive">
+      <match>^\s*\.\. _.*:.*$</match>
+    </context>
+
+    <context id="comment" style-ref="comment">
+      <start>(\s*)\.\.(\s+).+$</start>
+      <end>^(?!(\%{1@start}  \%{2@start})|(^$))</end>
+    </context>
+
+    <context id="comment-single" style-ref="comment">
+      <start>^(\s*)\.\.(\s*)$</start>
+      <end>x</end>
+      <include>
+        <context id="comment-single-block" style-ref="comment" end-parent="true">
+          <start>(\s*).+$</start>
+          <end>^(?!(\%{1@start}))</end>
+        </context>
+      </include>
+    </context>
+
+    <context id="title-adornment" style-ref="header">
+      <match>^\s*(=+|\-+|`+|:+|(\.\.\.+)|'+|"+|~+|\^+|_+|\*+|\++|#+)\s*$</match>
+    </context>
+
+    <context id="bullet" style-ref="bullet">
+      <match>^\s*[\*\+\-•‣⁃] </match>
+    </context>
+
+    <define-regex id="enumerator-chars" extended="true">
+      ([a-zA-Z]|([0-9]+))
+    </define-regex>
+
+    <context id="enumerator" style-ref="bullet">
+      <match>^\s*((\%{enumerator-chars}\.)|(\(?\%{enumerator-chars}\)) )</match>
+    </context>
+
+    <context id="field" style-ref="bullet">
+      <match>^\s*:.+?:</match>
+    </context>
+
+    <context id="strong-emphasis" style-ref="strong-emphasis">
+      <match>\*\*(?!\s).+?(?!\s)\*\*</match>
+    </context>
+
+    <context id="emphasis" style-ref="emphasis">
+      <match>\*(?!\s).+?(?!\s)\*</match>
+    </context>
+
+    <context id="link" style-ref="link">
+      <match>(\S+_)|(`\b.*?\b`_)</match>
+    </context>
+
+    <context id="substitution" style-ref="substitution">
+      <match>\|\b.*\b\|</match>
+    </context>
+
+    <context id="literals">
+      <include>
+        <context id="inline-literals" class="no-spell-check" style-ref="code">
+          <match>``(?!\s).*(?!\s)``</match>
+        </context>
+      </include>
+    </context>
+
+    <context id="url" style-ref="url">
+      <match>((http)|(file))://\S*</match>
+    </context>
+
+    <context id="rst">
+      <include>
+        <context ref="directive"/>
+        <context ref="link-target"/>
+        <context ref="footnotes"/>
+        <context ref="comment"/>
+        <context ref="comment-single"/>
+        <context ref="title-adornment"/>
+        <context ref="bullet"/>
+        <context ref="enumerator"/>
+        <context ref="field"/>
+        <context ref="strong-emphasis"/>
+        <context ref="emphasis"/>
+        <context ref="link"/>
+        <context ref="substitution"/>
+        <context ref="literals"/>
+        <context ref="url"/>
+      </include>
+    </context>
+  </definitions>
 
 </language>
