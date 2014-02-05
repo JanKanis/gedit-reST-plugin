@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.5: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.11: http://docutils.sourceforge.net/" />
 <title>reStructuredText plugin</title>
 <style type="text/css">
 
@@ -317,29 +317,28 @@ color:#E5E5E5;
 <h1 class="title">reStructuredText plugin</h1>
 
 <p>This is a little how-to for using the reStructuredText plugin inside
-<a class="reference external" href="https://wiki.gnome.org/Apps/Gedit">GEdit</a> .</p>
-<a class="reference external image-reference" href="http://farm3.static.flickr.com/2247/2259897529_aa85f5f540_b.jpg"><div align="center" class="align-center"><img alt="reSt Plugin Image" class="align-center" src="http://farm3.static.flickr.com/2256/2259897373_d47ecf0983_o_d.png" /></div>
-</a>
+<a class="reference external" href="https://wiki.gnome.org/Apps/Gedit">GEdit</a>.</p>
+<a class="reference external image-reference" href="http://farm3.static.flickr.com/2247/2259897529_aa85f5f540_b.jpg"><img alt="reSt Plugin Image" class="align-center" src="http://farm3.static.flickr.com/2256/2259897373_d47ecf0983_o_d.png" /></a>
+<p><strong>Note:</strong> To activate syntax highlighting see <a class="reference external" href="syntax/README.rst">syntax/README.rst</a>.</p>
 <div class="section" id="dependencies">
 <h1>Dependencies</h1>
 <ul class="simple">
-<li><a class="reference external" href="http://www.python.org/">Python</a> : version &gt;= 2.5;</li>
-<li><a class="reference external" href="http://pygments.org/">Pygments</a> : take the latest version;</li>
-<li><a class="reference external" href="http://docutils.sourceforge.net/">reStructuredText</a> ;</li>
-<li><a class="reference external" href="http://www.rexx.com/~dkuhlman/odtwriter.html">odtwriter</a> : a reStructuredText addon to export in OpenOffice format.</li>
+<li><a class="reference external" href="http://www.python.org/">Python</a>: version &gt;= 3.3</li>
+<li><a class="reference external" href="http://pygments.org/">Pygments</a>: take the latest version</li>
+<li><a class="reference external" href="http://docutils.sourceforge.net/">reStructuredText</a></li>
+<li><a class="reference external" href="http://www.rexx.com/~dkuhlman/odtwriter.html">odtwriter</a>: a reStructuredText addon to export in OpenOffice format</li>
 </ul>
 </div>
 <div class="section" id="installation">
 <h1>Installation</h1>
-<p>Unpack the zip file where you wanted to then :</p>
 <ul class="simple">
-<li>Put <tt class="docutils literal"><span class="pre">reST.plugin</span></tt> file in Gedit's plugins directory.
-Mine is (under Ubuntu Gutsy): <tt class="docutils literal"><span class="pre">/home/kib/.gnome2/gedit/plugins</span></tt>.
-The global directory is <tt class="docutils literal"><span class="pre">/usr/lib/i386-linux-gnu/gedit/plugins</span></tt>.</li>
-<li>Copy/Paste the <tt class="docutils literal"><span class="pre">reST</span></tt> folder inside <tt class="docutils literal"><span class="pre">/home/kib/.gnome2/gedit/plugins</span></tt>.</li>
+<li>Put <tt class="docutils literal">reST.plugin</tt> file in Gedit's plugins directory.
+The standard one should be <tt class="docutils literal"><span class="pre">~/.local/share/gedit/plugins/</span></tt>.
+The global directory is <tt class="docutils literal"><span class="pre">/usr/lib/i386-linux-gnu/gedit/plugins/</span></tt>.</li>
+<li>Copy the whole <tt class="docutils literal">reST</tt> folder into the same directory.</li>
 </ul>
 <p>Readme.rst and Readme.odt are just help files, you can do whatever you want with them.</p>
-<p>You should then obtain something like this :</p>
+<p>You should then obtain something like this:</p>
 <pre class="literal-block">
 .../plugins/
         reST.plugin
@@ -352,32 +351,32 @@ The global directory is <tt class="docutils literal"><span class="pre">/usr/lib/
 <div class="section" id="usage">
 <h1>Usage</h1>
 <p>Activate the plugin via Edit/Preferences/Plugins and turn the
-<tt class="docutils literal"><span class="pre">reStructuredText</span> <span class="pre">plugin</span></tt> box on.</p>
+<tt class="docutils literal">reStructuredText plugin</tt> box on.</p>
 <p>The plugin is now activated, and you should have a new panel inside the
-bottom pane named <tt class="docutils literal"><span class="pre">reSt</span> <span class="pre">Preview</span></tt>.</p>
+bottom pane named <tt class="docutils literal">reStructuredText Preview</tt>.</p>
 <div class="section" id="shortcuts">
 <h2>Shortcuts</h2>
 <p>There's only one shortcut for the moment, maybe I'll create some others in the
 future.</p>
-<p><tt class="docutils literal"><span class="pre">Ctrl+Shift+R</span></tt> : is used to refresh the generated HTML view inside
-<tt class="docutils literal"><span class="pre">reSt</span> <span class="pre">Preview</span></tt> pane. If there's some selected text, the conversion process
-will only apply on it. If there's no selection, the entire document is
-processed. It may be usefull for testing.</p>
+<p><tt class="docutils literal">Ctrl+Shift+R</tt> is used to refresh the generated HTML view inside
+<tt class="docutils literal">reStructuredText Preview</tt> pane. If there's some selected text, the conversion
+process will only apply on it. If there's no selection, the entire document is
+processed. It may be useful for testing.</p>
 </div>
 <div class="section" id="menu">
 <h2>Menu</h2>
-<p>The <tt class="docutils literal"><span class="pre">Tools</span></tt> menu is populated with several options :</p>
+<p>The <tt class="docutils literal">Tools</tt> menu is populated with several options:</p>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">reSt</span> <span class="pre">Preview</span></tt> is the same as the above;</li>
-<li><tt class="docutils literal"><span class="pre">Create</span> <span class="pre">table</span></tt> is usefull for creating simple reStructuredText tables.</li>
+<li><tt class="docutils literal">reSt Preview</tt> is the same as the above;</li>
+<li><tt class="docutils literal">Create table</tt> is useful for creating simple reStructuredText tables.</li>
 </ul>
-<p>Example : Enter the two folling lines in gedit, select them and activate
-<tt class="docutils literal"><span class="pre">Create</span> <span class="pre">table</span></tt> :</p>
+<p><strong>Example:</strong> Enter the two folling lines in gedit, select them and activate
+<tt class="docutils literal">Create table</tt>:</p>
 <pre class="literal-block">
 one,two,tree
 First,Second,Third
 </pre>
-<p>The output will be :</p>
+<p>The output will be:</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="32%" />
@@ -398,18 +397,15 @@ First,Second,Third
 </tbody>
 </table>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">Paste</span> <span class="pre">Code</span></tt> maybe usefull to paste some parts of code using
-<a class="reference external" href="http://pygments.org/">Pygments</a>'s <tt class="docutils literal"><span class="pre">sourcecode</span></tt> directive.
-Just invoque <tt class="docutils literal"><span class="pre">Paste</span> <span class="pre">Code</span></tt> with something in your clipboard and
+<li><tt class="docutils literal">Paste Code</tt> maybe useful to paste some parts of code using
+<a class="reference external" href="http://pygments.org/">Pygments</a>'s <tt class="docutils literal">sourcecode</tt> directive.
+Just invoke <tt class="docutils literal">Paste Code</tt> with something in your clipboard and
 you're done. You'll have to adjust the language afterwards.</li>
-<li><tt class="docutils literal"><span class="pre">--&gt;</span> <span class="pre">HTML</span></tt>, <tt class="docutils literal"><span class="pre">--&gt;</span> <span class="pre">LaTeX</span></tt>, <tt class="docutils literal"><span class="pre">--&gt;</span> <span class="pre">OpenOffice</span></tt>: are convenient ways to
+<li><tt class="docutils literal"><span class="pre">--&gt;</span> HTML</tt>, <tt class="docutils literal"><span class="pre">--&gt;</span> LaTeX</tt>, <tt class="docutils literal"><span class="pre">--&gt;</span> LibreOffice</tt>: are convenient ways to
 export your reStructuredText docs to the given formats with custom *
-stylesheets. You're free to modify them, even to propose your own because
-I'm not a CSS ace :)</li>
+stylesheets. If you're not happy with the formatting go ahead and modify
+the stylesheets!</li>
 </ul>
-<p>Hoping it helps you, to contact me, drop me a message here : kib2 at free.fr</p>
-<p>See you,</p>
-<p>Kib.</p>
 </div>
 </div>
 </div>
