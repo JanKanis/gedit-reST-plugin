@@ -23,13 +23,11 @@ Dependencies
 Installation
 ------------
 
-- Put ``reST.plugin`` file in Gedit's plugins directory.
-  The standard one should be ``~/.local/share/gedit/plugins/``.
-  The global directory is ``/usr/lib/i386-linux-gnu/gedit/plugins/``.
+- Put ``reST.plugin`` file in GEdit's plugins directory.
+  The standard one should be ``~/.local/share/gedit/plugins/``. Alternatively,
+  the global directory is something like ``/usr/lib/i386-linux-gnu/gedit/plugins/``.
 
 - Copy the whole ``reST`` folder into the same directory.
-
-Readme.rst and Readme.odt are just help files, you can do whatever you want with them.
 
 You should then obtain something like this: ::
 
@@ -43,30 +41,30 @@ You should then obtain something like this: ::
 Usage
 -----
 
-Activate the plugin via Edit/Preferences/Plugins and turn the
-``reStructuredText plugin`` box on.
+Activate the plugin via *Edit / Preferences / Plugins* and check the checkbox
+next to ``reStructuredText Preview``.
 
 The plugin is now activated, and you should have a new panel inside the 
-bottom pane named ``reStructuredText Preview``.
+bottom pane named ``reStructuredText Preview``. If you don't see the panel on
+the bottom of the editor window make it visible via *View / Bottom Panel*.
 
 Shortcuts
 #########
 
-There's only one shortcut for the moment, maybe I'll create some others in the
-future.
+There's only one shortcut for the moment: ``Ctrl+Shift+R``
 
 ``Ctrl+Shift+R`` is used to refresh the generated HTML view inside
 ``reStructuredText Preview`` pane. If there's some selected text, the conversion
-process will only apply on it. If there's no selection, the entire document is
-processed. It may be useful for testing.
+will only process the selected portion of the text. If there's no selection, the
+entire document is processed. This may be useful for trouble shooting.
 
 Menu
 ####
 
 The ``Tools`` menu is populated with several options:
 
-- ``reSt Preview`` is the same as the above;
-- ``Create table`` is useful for creating simple reStructuredText tables.
+- ``reStructuredText Preview`` refreshes the preview pane (same as above)
+- ``Create table`` is useful for creating simple reStructuredText tables
 
 **Example:** Enter the two folling lines in gedit, select them and activate
 ``Create table``: ::
