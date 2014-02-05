@@ -41,7 +41,7 @@ START_HTML = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3
         %s
     </style>
 </head>
-<body>"""% (styles.read())
+<body>""" % (styles.read())
 
 styles.close()
 
@@ -77,6 +77,7 @@ ui_str = """<ui>
   </menubar>
 </ui>
 """
+
 
 class restPlugin(GObject.Object, Gedit.WindowActivatable):
     __gtype_name__ = "reStructuredTextPlugin"
@@ -120,8 +121,8 @@ class restPlugin(GObject.Object, Gedit.WindowActivatable):
 
         ## Added later
         self._action_group = Gtk.ActionGroup("reStPluginActions")
-        self._action_group.add_actions([("preview", None, _("reStructuredText preview"),
-                                         "<Control><Shift>R", _("reStructuredText preview"),
+        self._action_group.add_actions([("preview", None, _("reStructuredText Preview"),
+                                         "<Control><Shift>R", _("reStructuredText Preview"),
                                          self.on_update_preview),
                                         ("table", None, _("Create table"),
                                          None, _("Create a reStructuredText table"),
@@ -138,7 +139,7 @@ class restPlugin(GObject.Object, Gedit.WindowActivatable):
                                         ("--> LibreOffice", None, _("--> LibreOffice"),
                                          None, _("Save as LibreOffice ODF"),
                                          self.on_libreoffice),
-                                       ])
+        ])
 
         # Insert the action group
         manager.insert_action_group(self._action_group, -1)
@@ -206,22 +207,22 @@ class restPlugin(GObject.Object, Gedit.WindowActivatable):
         windowdata["bottom_panel"].set_placement(p)
 
     def on_latex(self, action):
+        command = 'python3 %s/to_tex.py "%s.rst" "%s.tex"'
         doc = self.window.get_active_document()
         filename = doc.get_uri_for_display()[:-4]
-        pd = restpluginDir
-        os.system('python3 %s/to_tex.py "%s.rst" "%s.tex"' % (pd,filename,filename))
+        os.system(command % (restpluginDir, filename, filename))
 
     def on_html(self, action):
+        command = 'python3 %s/to_html.py --stylesheet=%s/restmain.css --language=en "%s.rst" "%s.html"'
         doc = self.window.get_active_document()
         filename = doc.get_uri_for_display()[:-4]
-        pd = restpluginDir
-        os.system('python3 %s/to_html.py --stylesheet=%s/restmain.css --language=en "%s.rst" "%s.html"' % (pd,pd,filename,filename))
+        os.system(command % (restpluginDir, restpluginDir, filename, filename))
 
     def on_libreoffice(self, action):
+        command = 'python3 %s/to_odt.py --add-syntax-highlighting --stylesheet=%s/default.odt "%s.rst" "%s.odt"'
         doc = self.window.get_active_document()
         filename = doc.get_uri_for_display()[:-4]
-        pd = restpluginDir
-        os.system('python3 %s/to_odt.py --add-syntax-highlighting --stylesheet=%s/default.odt "%s.rst" "%s.odt"' % (pd,pd,filename,filename))
+        os.system(command % (restpluginDir, restpluginDir, filename, filename))
 
     def on_paste_code(self, action):
         doc = self.window.get_active_document()
@@ -231,7 +232,7 @@ class restPlugin(GObject.Object, Gedit.WindowActivatable):
 
         lines = Gtk.clipboard_get().wait_for_text().split('\n')
         to_copy = "\n".join([line for line in lines[1:]])
-        doc.insert_at_cursor('..sourcecode:: ChoosenLanguage\n\n    %s\n'%lines[0])
+        doc.insert_at_cursor('..sourcecode:: ChoosenLanguage\n\n    %s\n' % lines[0])
         doc.insert_at_cursor(to_copy + '\n\n')
 
     def on_create_table(self, action):
@@ -253,10 +254,10 @@ class restPlugin(GObject.Object, Gedit.WindowActivatable):
             end = doc.get_iter_at_mark(doc.get_selection_bound())
 
         text = doc.get_text(start, end)
-        doc.delete(start,end)
+        doc.delete(start, end)
 
         lines = text.split("\n")
         labels = lines[0].split(',')
-        rows = [row.strip().split(',')  for row in lines[1:]]
+        rows = [row.strip().split(',') for row in lines[1:]]
 
-        doc.insert_at_cursor(toRSTtable([labels]+rows))
+        doc.insert_at_cursor(toRSTtable([labels] + rows))
