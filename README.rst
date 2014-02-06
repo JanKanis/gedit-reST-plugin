@@ -1,8 +1,8 @@
-reStructuredText plugin
+reStructuredText Plugin
 =======================
 
 This is a little how-to for using the reStructuredText plugin inside 
-`GEdit <https://wiki.gnome.org/Apps/Gedit>`_.
+`gedit <https://wiki.gnome.org/Apps/Gedit>`_.
 
 .. image:: http://farm3.static.flickr.com/2256/2259897373_d47ecf0983_o_d.png
     :scale: 100
@@ -15,15 +15,15 @@ This is a little how-to for using the reStructuredText plugin inside
 Dependencies
 ------------
 
-- `Python <http://www.python.org/>`_: version >= 3.3
+- `Python <http://www.python.org/>`_: version >= 3.3 (-> use `mcepl/reStPlugin <https://github.com/mcepl/reStPlugin>`_ for Python 2.x)
 - `Pygments <http://pygments.org/>`_: take the latest version
 - `reStructuredText <http://docutils.sourceforge.net/>`_
-- `odtwriter <http://www.rexx.com/~dkuhlman/odtwriter.html>`_: a reStructuredText addon to export in OpenOffice format
+- `odtwriter <http://www.rexx.com/~dkuhlman/odtwriter.html>`_: a reStructuredText addon to export in LibreOffice format
 
 Installation
 ------------
 
-- Put ``reST.plugin`` file in GEdit's plugins directory.
+- Put ``reST.plugin`` file in gedit's plugins directory.
   The standard one should be ``~/.local/share/gedit/plugins/``. Alternatively,
   the global directory is something like ``/usr/lib/i386-linux-gnu/gedit/plugins/``.
 
