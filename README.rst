@@ -10,8 +10,6 @@ This is a little how-to for using the reStructuredText plugin inside
     :align: center
     :target: http://farm3.static.flickr.com/2247/2259897529_aa85f5f540_b.jpg
 
-**Note:** To activate syntax highlighting see `<syntax/README.rst>`_.
-
 Dependencies
 ------------
 
@@ -37,6 +35,8 @@ You should then obtain something like this: ::
                 __init__.py
                 makeTable.py
                 etc.
+
+- Follow the instructions in `<syntax/README.rst>`_ to activate syntax highlighting.
 
 Usage
 -----
