@@ -1,7 +1,7 @@
 reStructuredText Plugin
 =======================
 
-This is a little how-to for using the reStructuredText plugin inside 
+This is a little how-to for using the reStructuredText plugin inside
 `gedit <https://wiki.gnome.org/Apps/Gedit>`_.
 
 .. image:: http://farm3.static.flickr.com/2256/2259897373_d47ecf0983_o_d.png
@@ -21,9 +21,18 @@ Dependencies
 Installation
 ------------
 
+- Choose the right source for your version of gedit from the
+  `releases <https://github.com/bittner/gedit-reST-plugin/releases>`_ on
+  GitHub.  With ``git`` you can checkout the corresponding tag (e.g.
+  ``git checkout gedit-3.12``).
+
+  :gedit-3.8: 3.8 <= gedit < to 3.12
+  :gedit-3.12: gedit >= 3.12
+
 - Put ``reST.plugin`` file in gedit's plugins directory.
   The standard one should be ``~/.local/share/gedit/plugins/``. Alternatively,
-  the global directory is something like ``/usr/lib/i386-linux-gnu/gedit/plugins/``.
+  the global directory is something like ``/usr/lib/gedit/plugins/`` or
+  ``/usr/lib/i386-linux-gnu/gedit/plugins/``.
 
 - Copy the whole ``reST`` folder into the same directory.
 
@@ -44,7 +53,7 @@ Usage
 Activate the plugin via *Edit / Preferences / Plugins* and check the checkbox
 next to ``reStructuredText Preview``.
 
-The plugin is now activated, and you should have a new panel inside the 
+The plugin is now activated, and you should have a new panel inside the
 bottom pane named ``reStructuredText Preview``. If you don't see the panel on
 the bottom of the editor window make it visible via *View / Bottom Panel*.
 
@@ -75,9 +84,9 @@ The ``Tools`` menu is populated with several options:
 The output will be:
 
 =========  ==========  =========
-   one        two         tree  
+   one        two         tree
 =========  ==========  =========
-  First      Second      Third  
+  First      Second      Third
 =========  ==========  =========
 
 - ``Paste Code`` maybe useful to paste some parts of code using

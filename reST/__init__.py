@@ -1,7 +1,6 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# restPlugin - HTML preview of reSt formatted text in gedit
+# restPlugin - HTML preview of reST formatted text in gedit
 #
 # Copyright (C) 2007 - Christophe Kibleur
 #
@@ -26,28 +25,6 @@ from gettext import gettext as _
 #import RegisterPygment
 import os
 
-
-## I'm not satisfied with that
-restpluginDir = os.path.dirname(os.path.abspath(__file__))
-css = os.path.join(restpluginDir, 'restmain.css')
-styles = open(css, 'r')
-
-START_HTML = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta http-equiv="Content-Language" content="English" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <style type="text/css">
-        %s
-    </style>
-</head>
-<body>""" % (styles.read())
-
-styles.close()
-
-END_HTML = """</body>
-</html>
-"""
 
 # Menu item example, insert a new item in the Tools menu
 ui_str = """<ui>
@@ -86,6 +63,23 @@ class restPlugin(GObject.Object, Gedit.WindowActivatable):
     def __init__(self):
         GObject.Object.__init__(self)
 
+        self.restplugin_dir = os.path.dirname(os.path.abspath(__file__))
+        css_file = os.path.join(self.restplugin_dir, 'restmain.css')
+        with open(css_file, 'r') as styles:
+            self.START_HTML = """<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Language" content="English">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style type="text/css">
+        %s
+    </style>
+</head>
+<body>""" % styles.read()
+            self.END_HTML = """</body>
+</html>
+"""
+
     def do_activate(self):
         ## TODO : Maybe have to check the filetype ?
 
@@ -103,7 +97,7 @@ class restPlugin(GObject.Object, Gedit.WindowActivatable):
 
         html_view = WebKit.WebView()
         html_view.load_string("%s\n<p>reStructuredText Viewer</p>\n%s" %
-                              (START_HTML, END_HTML), 'text/html', 'utf8', '')
+                              (self.START_HTML, self.END_HTML), 'text/html', 'utf8', '')
 
         #scrolled_window.set_hadjustment(html_view.get_hadjustment())
         #scrolled_window.set_vadjustment(html_view.get_vadjustment())
@@ -111,9 +105,7 @@ class restPlugin(GObject.Object, Gedit.WindowActivatable):
         scrolled_window.show_all()
 
         bottom = self.window.get_bottom_panel()
-        image = Gtk.Image()
-        image.set_from_icon_name("gnome-mime-text-html", Gtk.IconSize.MENU)
-        bottom.add_item(scrolled_window, "rest-preview", "reStructuredText Preview", image)
+        bottom.add_titled(scrolled_window, "rest-preview", "reStructuredText Preview")
         windowdata["bottom_panel"] = scrolled_window
         windowdata["html_doc"] = html_view
 
@@ -159,7 +151,7 @@ class restPlugin(GObject.Object, Gedit.WindowActivatable):
 
         # Remove the bottom panel
         bottom = self.window.get_bottom_panel()
-        bottom.remove_item(windowdata["bottom_panel"])
+        bottom.remove(windowdata["bottom_panel"])
 
     def getSelection(self):
         view = self.window.get_active_view()
@@ -201,28 +193,35 @@ class restPlugin(GObject.Object, Gedit.WindowActivatable):
         p = windowdata["bottom_panel"].get_placement()
 
         html_doc = windowdata["html_doc"]
-        html_doc.load_string("%s\n%s\n%s" % (START_HTML, html, END_HTML),
+        html_doc.load_string("%s\n%s\n%s" % (self.START_HTML, html, self.END_HTML),
                              'text/html', 'utf8', '')
 
         windowdata["bottom_panel"].set_placement(p)
 
     def on_latex(self, action):
-        command = 'python3 %s/to_tex.py "%s.rst" "%s.tex"'
+        command = 'python3 {dir}/to_tex.py' \
+                  ' "{file}.rst" "{file}.tex"'
         doc = self.window.get_active_document()
         filename = doc.get_uri_for_display()[:-4]
-        os.system(command % (restpluginDir, filename, filename))
+        os.system(command.format(dir=self.restplugin_dir, file=filename))
 
     def on_html(self, action):
-        command = 'python3 %s/to_html.py --stylesheet=%s/restmain.css --language=en "%s.rst" "%s.html"'
+        command = 'python3 {dir}/to_html.py' \
+                  ' --stylesheet={dir}/restmain.css' \
+                  ' --language=en' \
+                  ' "{file}.rst" "{file}.html"'
         doc = self.window.get_active_document()
         filename = doc.get_uri_for_display()[:-4]
-        os.system(command % (restpluginDir, restpluginDir, filename, filename))
+        os.system(command.format(dir=self.restplugin_dir, file=filename))
 
     def on_libreoffice(self, action):
-        command = 'python3 %s/to_odt.py --add-syntax-highlighting --stylesheet=%s/default.odt "%s.rst" "%s.odt"'
+        command = 'python3 {dir}/to_odt.py' \
+                  ' --add-syntax-highlighting' \
+                  ' --stylesheet={dir}/default.odt' \
+                  ' "{file}.rst" "{file}.odt"'
         doc = self.window.get_active_document()
         filename = doc.get_uri_for_display()[:-4]
-        os.system(command % (restpluginDir, restpluginDir, filename, filename))
+        os.system(command.format(dir=self.restplugin_dir, file=filename))
 
     def on_paste_code(self, action):
         doc = self.window.get_active_document()
@@ -260,4 +259,4 @@ class restPlugin(GObject.Object, Gedit.WindowActivatable):
         labels = lines[0].split(',')
         rows = [row.strip().split(',') for row in lines[1:]]
 
-        doc.insert_at_cursor(toRSTtable([labels] + rows))
+        # doc.insert_at_cursor(toRSTtable([labels] + rows))

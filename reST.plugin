@@ -1,5 +1,4 @@
 [Plugin]
-Loader=python3
 Module=reST
 IAge=3
 Name=reStructuredText Preview
