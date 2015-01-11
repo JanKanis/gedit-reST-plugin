@@ -29,6 +29,7 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
 
     def __init__(self):
         GObject.Object.__init__(self)
+
         self._panel = None
 
     def do_activate(self):
@@ -45,6 +46,6 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
         bottom.remove(self._panel)
 
     def do_update_state(self):
-        pass
+        self._panel.update_view(self.window)
 
 # ex:et:ts=4:
