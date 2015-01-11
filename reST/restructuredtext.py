@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
+from docutils.core import publish_parts
 from gi.repository import Gtk, WebKit
 from os.path import abspath, dirname, join
 
@@ -42,7 +43,7 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
     """
 
     def __init__(self, styles_filename='restructuredtext.css'):
-        Gtk.ScrolledWindow.__init__(self)  # TODO: replace by super()
+        Gtk.ScrolledWindow.__init__(self)
 
         module_dir = dirname(abspath(__file__))
         css_file = join(module_dir, styles_filename)
@@ -55,9 +56,24 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
         self.add(self.view)
         self.view.show()
 
-    def update_view(self):
-        self.view.load_string("%s\n<p>reStructuredText Viewer</p>\n%s" %
-                              (self.START_HTML, self.END_HTML), 'text/html', 'utf8', '')
+    def update_view(self, parent_window):
+        view = parent_window.get_active_view()
+        if not view:
+            html = '<p>reStructuredText Preview</p>'
+        else:
+            doc = view.get_buffer()
+            start = doc.get_start_iter()
+            end = doc.get_end_iter()
+
+            if doc.get_selection_bounds():
+                start = doc.get_iter_at_mark(doc.get_insert())
+                end = doc.get_iter_at_mark(doc.get_selection_bound())
+
+            text = doc.get_text(start, end, False)
+            html = publish_parts(text, writer_name="html")["html_body"]
+
+        self.view.load_string("%s\n%s\n%s" % (self.START_HTML, html, self.END_HTML),
+                              'text/html', 'utf8', '')
 
     def clear_view(self):
         self.view.load_string("", 'text/html', 'utf8', '')

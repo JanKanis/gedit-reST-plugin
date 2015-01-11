@@ -17,38 +17,34 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-from gi.repository import GObject, Gtk, Gedit, Peas, PeasGtk, WebKit
+from gi.repository import GObject, Gedit, WebKit
 
 from .restructuredtext import RestructuredtextHtmlPanel
-# from .config import RestructuredtextConfigWidget
 
 
-class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configurable):
+class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
     __gtype_name__ = "ReStructuredTextPlugin"
 
     window = GObject.property(type=Gedit.Window)
 
     def __init__(self):
         GObject.Object.__init__(self)
-        self.html_window = None
+        self._panel = None
 
     def do_activate(self):
-        self.html_window = RestructuredtextHtmlPanel()
-        self.html_window.update_view()
+        self._panel = RestructuredtextHtmlPanel()
+        self._panel.update_view(self.window)
+        self._panel.show()
+
         bottom = self.window.get_bottom_panel()
-        bottom.add_titled(self.html_window, "GeditReStructuredTextPanel", _('reStructuredText Preview'))
+        bottom.add_titled(self._panel, "GeditReStructuredTextPanel", _('reStructuredText Preview'))
 
     def do_deactivate(self):
-        self.html_window.clear_view()
+        self._panel.clear_view()
         bottom = self.window.get_bottom_panel()
-        bottom.remove(self.html_window)
+        bottom.remove(self._panel)
 
     def do_update_state(self):
         pass
-
-#    def do_create_configure_widget(self):
-#        config_widget = PythonConsoleConfigWidget(self.plugin_info.get_data_dir())
-#
-#        return config_widget.configure_widget()
 
 # ex:et:ts=4:
