@@ -1,8 +1,10 @@
 [Plugin]
+Loader=python3
 Module=reST
 IAge=3
 Name=reStructuredText Preview
 Description=Preview panel for reStructuredText (.rst)
-Authors=Christophe Kibleur <kib2@free.fr>;Matěj Cepl <mcepl@cepl.eu>;Peter Bittner <django@bittner.it>;François Poirotte
-Copyright=Copyright © 2008 Christophe Kibleur <kib2@free.fr>
+Authors=Peter Bittner <django@bittner.it>;Christophe Kibleur <kib2@free.fr>;Matěj Cepl <mcepl@cepl.eu>;François Poirotte
+Copyright=Copyright © 2015 Peter Bittner
 Website=https://github.com/bittner/gedit-reST-plugin
+Version=3.14.0

@@ -27,12 +27,12 @@ Installation
   ``git checkout gedit-3.12``).
 
   :gedit-3.8: 3.8 <= gedit < to 3.12
-  :gedit-3.12: gedit >= 3.12
+  :gedit-3.14: gedit >= 3.12
 
 - Put ``reST.plugin`` file in gedit's plugins directory.
   The standard one should be ``~/.local/share/gedit/plugins/``. Alternatively,
   the global directory is something like ``/usr/lib/gedit/plugins/`` or
-  ``/usr/lib/i386-linux-gnu/gedit/plugins/``.
+  ``/usr/lib/<architecture>-linux-gnu/gedit/plugins/``.
 
 - Copy the whole ``reST`` folder into the same directory.
 
