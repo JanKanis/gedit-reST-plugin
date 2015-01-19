@@ -98,3 +98,12 @@ The output will be:
   export your reStructuredText docs to the given formats with custom *
   stylesheets. If you're not happy with the formatting go ahead and modify
   the stylesheets!
+
+Alternatives
+------------
+
+If you're not totally happy with this plugin try the following editors for
+quick and free solutions of editing reStructuredText files:
+
+- `rsted <http://rst.ninjs.org/>`_ (online reStructuredText editor)
+- `ReText <http://sourceforge.net/projects/retext/>`_ (reStructuredText and MarkDown editor)
