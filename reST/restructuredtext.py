@@ -26,19 +26,20 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
     """
     A Gtk panel displaying HTML rendered from ``.rst`` source code.
     """
-
-    START_HTML = """<!DOCTYPE html>
+    CONTENT_TYPE = 'text/html'
+    ENCODING = 'utf8'
+    TEMPLATE = """<!DOCTYPE html>
     <html>
     <head>
         <meta http-equiv="Content-Language" content="English">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <style type="text/css">
-            %s
+            {css}
         </style>
     </head>
-    <body>"""
-
-    END_HTML = """</body>
+    <body>
+    {body}
+    </body>
     </html>
     """
 
@@ -48,7 +49,7 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
         module_dir = dirname(abspath(__file__))
         css_file = join(module_dir, styles_filename)
         with open(css_file, 'r') as styles:
-            self.START_HTML = self.START_HTML % styles.read()
+            self.styles = styles.read()
 
         self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.set_shadow_type(Gtk.ShadowType.NONE)
@@ -70,10 +71,12 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
                 end = doc.get_iter_at_mark(doc.get_selection_bound())
 
             text = doc.get_text(start, end, False)
-            html = publish_parts(text, writer_name="html")["html_body"]
+            html = publish_parts(text, writer_name='html')['html_body']
+            path = ''
 
-        self.view.load_string("%s\n%s\n%s" % (self.START_HTML, html, self.END_HTML),
-                              'text/html', 'utf8', '')
+        self.view.load_string(self.TEMPLATE.format(
+            body=html, css=self.styles
+        ), self.CONTENT_TYPE, self.ENCODING, '')
 
     def clear_view(self):
-        self.view.load_string("", 'text/html', 'utf8', '')
+        self.view.load_string('', self.CONTENT_TYPE, self.ENCODING, '')
