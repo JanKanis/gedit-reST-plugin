@@ -26,13 +26,11 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
     """
     A Gtk panel displaying HTML rendered from ``.rst`` source code.
     """
-    CONTENT_TYPE = 'text/html'
-    ENCODING = 'utf8'
+    MIME_TYPE = 'text/html'
+    ENCODING = 'UTF-8'
     TEMPLATE = """<!DOCTYPE html>
     <html>
     <head>
-        <meta http-equiv="Content-Language" content="English">
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <style type="text/css">
             {css}
         </style>
@@ -61,6 +59,7 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
         view = parent_window.get_active_view()
         if not view:
             html = '<p>reStructuredText Preview</p>'
+            base_uri = ''
         else:
             doc = view.get_buffer()
             start = doc.get_start_iter()
@@ -72,11 +71,11 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
 
             text = doc.get_text(start, end, False)
             html = publish_parts(text, writer_name='html')['html_body']
-            path = ''
+            base_uri = parent_window.get_active_document().get_location().get_uri()
 
         self.view.load_string(self.TEMPLATE.format(
             body=html, css=self.styles
-        ), self.CONTENT_TYPE, self.ENCODING, '')
+        ), self.MIME_TYPE, self.ENCODING, base_uri)
 
     def clear_view(self):
-        self.view.load_string('', self.CONTENT_TYPE, self.ENCODING, '')
+        self.view.load_string('', self.MIME_TYPE, self.ENCODING, '')
