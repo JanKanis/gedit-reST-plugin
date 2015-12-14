@@ -1,8 +1,7 @@
 reStructuredText Plugin
 =======================
 
-This is a little how-to for using the reStructuredText plugin inside
-`gedit <https://wiki.gnome.org/Apps/Gedit>`_.
+This is a little how-to for using the reStructuredText plugin inside gedit_.
 
 .. image:: http://farm3.static.flickr.com/2256/2259897373_d47ecf0983_o_d.png
     :scale: 100
@@ -10,19 +9,28 @@ This is a little how-to for using the reStructuredText plugin inside
     :align: center
     :target: http://farm3.static.flickr.com/2247/2259897529_aa85f5f540_b.jpg
 
+
+.. _gedit: https://wiki.gnome.org/Apps/Gedit
+
 Dependencies
 ------------
 
-- `Python <http://www.python.org/>`_: version >= 3.3 (-> use `mcepl/reStPlugin <https://github.com/mcepl/reStPlugin>`_ for Python 2.x)
-- `Pygments <http://pygments.org/>`_: take the latest version
-- `reStructuredText <http://docutils.sourceforge.net/>`_
-- `odtwriter <http://www.rexx.com/~dkuhlman/odtwriter.html>`_: a reStructuredText addon to export in LibreOffice format
+- Python_: version >= 3.3 (-> use `mcepl/reStPlugin`_ for Python 2.x)
+- Pygments_: take the latest version
+- reStructuredText_
+- odtwriter_: a reStructuredText addon to export in LibreOffice format
+
+
+.. _mcepl/reStPlugin: https://github.com/mcepl/reStPlugin
+.. _Python: http://www.python.org/
+.. _Pygments: http://pygments.org/
+.. _reStructuredText: http://docutils.sourceforge.net/
+.. _odtwriter: http://www.rexx.com/~dkuhlman/odtwriter.html
 
 Installation
 ------------
 
-- Choose the right source for your version of gedit from the
-  `releases <https://github.com/bittner/gedit-reST-plugin/releases>`_ on
+- Choose the right source for your version of gedit from the releases_ on
   GitHub.  With ``git`` you can checkout the corresponding tag (e.g.
   ``git checkout gedit-3.12``).
 
@@ -46,6 +54,9 @@ You should then obtain something like this: ::
                 etc.
 
 - Follow the instructions in `<syntax/README.rst>`_ to activate syntax highlighting.
+
+
+.. _releases: https://github.com/bittner/gedit-reST-plugin/releases
 
 Usage
 -----
@@ -75,8 +86,8 @@ The ``Tools`` menu is populated with several options:
 - ``reStructuredText Preview`` refreshes the preview pane (same as above)
 - ``Create table`` is useful for creating simple reStructuredText tables
 
-**Example:** Enter the two folling lines in gedit, select them and activate
-``Create table``: ::
+**Example:** Enter the two following lines in gedit, select them and activate
+``Create table``::
 
     one,two,tree
     First,Second,Third
@@ -89,10 +100,10 @@ The output will be:
   First      Second      Third
 =========  ==========  =========
 
-- ``Paste Code`` maybe useful to paste some parts of code using
-  `Pygments <http://pygments.org/>`_'s ``sourcecode`` directive.
-  Just invoke ``Paste Code`` with something in your clipboard and
-  you're done. You'll have to adjust the language afterwards.
+- ``Paste Code`` maybe useful to paste some parts of code using the
+  ``sourcecode`` directive of Pygments_.
+  Just invoke ``Paste Code`` with something in your clipboard and you're done.
+  You'll have to adjust the language afterwards.
 
 - ``--> HTML``, ``--> LaTeX``, ``--> LibreOffice``: are convenient ways to
   export your reStructuredText docs to the given formats with custom *
@@ -105,5 +116,9 @@ Alternatives
 If you're not totally happy with this plugin try the following editors for
 quick and free solutions of editing reStructuredText files:
 
-- `rsted <http://rst.ninjs.org/>`_ (online reStructuredText editor)
-- `ReText <http://sourceforge.net/projects/retext/>`_ (reStructuredText and MarkDown editor)
+- rsted_ (online reStructuredText editor)
+- ReText_ (reStructuredText and MarkDown editor)
+
+
+.. _rsted: http://rst.ninjs.org/
+.. _ReText: https://github.com/retext-project/retext
