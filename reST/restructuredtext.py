@@ -71,8 +71,12 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
 
             text = doc.get_text(start, end, False)
             html = publish_parts(text, writer_name='html')['html_body']
-            base_uri = parent_window.get_active_document().\
-                get_location().get_uri()
+            try:
+                base_uri = parent_window.get_active_document().get_location().\
+                    get_uri()
+            except AttributeError as err:
+                print('Notice: Ignoring AttributeError: %s' % err)
+                base_uri = ''
 
         self.view.load_string(self.TEMPLATE.format(
             body=html, css=self.styles

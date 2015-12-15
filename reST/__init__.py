@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-from gi.repository import GObject, Gedit, WebKit
+from gi.repository import GObject, Gedit
 
 from .restructuredtext import RestructuredtextHtmlPanel
 
@@ -33,12 +33,19 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
         self._panel = None
 
     def do_activate(self):
+        panel_name = 'GeditReStructuredTextPanel'
+        panel_title = 'reStructuredText Preview'
+
         self._panel = RestructuredtextHtmlPanel()
         self._panel.update_view(self.window)
         self._panel.show()
 
         bottom = self.window.get_bottom_panel()
-        bottom.add_titled(self._panel, "GeditReStructuredTextPanel", _('reStructuredText Preview'))
+        try:
+            bottom.add_titled(self._panel, panel_name, panel_title)
+        except AttributeError as err:
+            print('Falling back to old implementation. Reason: %s' % err)
+            bottom.add_item(self._panel, panel_name, panel_title)
 
     def do_deactivate(self):
         self._panel.clear_view()
