@@ -7,4 +7,4 @@ Description=Preview panel for reStructuredText (.rst)
 Authors=Peter Bittner <django@bittner.it>;Christophe Kibleur <kib2@free.fr>;Matěj Cepl <mcepl@cepl.eu>;François Poirotte
 Copyright=Copyright © 2014-2018 Peter Bittner
 Website=https://github.com/bittner/gedit-reST-plugin
-Version=3.22.0
+Version=3.22.1

@@ -62,10 +62,14 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
 
     def update_view(self, parent_window):
         view = parent_window.get_active_view()
-        if not view:
-            html = '<p>reStructuredText Preview</p>'
-            base_uri = ''
-        else:
+        language = None
+        if view:
+            source_language = \
+                parent_window.get_active_document().get_language()
+            if source_language:
+                language = source_language.get_name()
+
+        if language == 'reStructuredText':
             doc = view.get_buffer()
             start = doc.get_start_iter()
             end = doc.get_end_iter()
@@ -78,6 +82,13 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
             html = publish_parts(text, writer_name='html')['html_body']
             location = parent_window.get_active_document().get_location()
             base_uri = location.get_uri() if location else ''
+        else:
+            html = '<h3>reStructuredText Preview</h3>\n' \
+                   '<p>' \
+                   '<em>Switch file language to</em> reStructuredText ' \
+                   '<em>to render the document</em>' \
+                   '</p>'
+            base_uri = ''
 
         self.view.load_html(self.TEMPLATE.format(
             body=html, css=self.styles

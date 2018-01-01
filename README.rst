@@ -85,6 +85,13 @@ this more easy than ever.  Your contribution is appreciated!
 .. _July 4, 2014 version:
     https://github.com/bittner/gedit-reST-plugin/blob/64070843f637aad78f3be4b85478e7e1174a7bca/README.rst#shortcuts
 
+Contributing
+------------
+
+- `API docs`_ for gedit plugin development
+
+
+.. _API docs: https://wiki.gnome.org/Apps/Gedit/PythonPluginHowTo#api-gedit-panel
 
 Alternatives
 ------------
