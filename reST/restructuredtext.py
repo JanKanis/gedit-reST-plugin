@@ -2,7 +2,7 @@
 
 # restructuredtext.py - reStructuredText HTML preview panel
 #
-# Copyright (C) 2015 - Peter Bittner
+# Copyright (C) 2014-2018 - Peter Bittner
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,8 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
+import gi
+
+gi.require_version('WebKit2', '4.0')
+gi.require_version('Gtk', '3.0')
+
 from docutils.core import publish_parts
-from gi.repository import Gtk, WebKit
+from gi.repository import Gtk, WebKit2
 from os.path import abspath, dirname, join
 
 
@@ -51,7 +56,7 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
 
         self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.set_shadow_type(Gtk.ShadowType.NONE)
-        self.view = WebKit.WebView()
+        self.view = WebKit2.WebView()
         self.add(self.view)
         self.view.show()
 
@@ -71,16 +76,12 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
 
             text = doc.get_text(start, end, False)
             html = publish_parts(text, writer_name='html')['html_body']
-            try:
-                base_uri = parent_window.get_active_document().get_location().\
-                    get_uri()
-            except AttributeError as err:
-                print('Notice: Ignoring AttributeError: %s' % err)
-                base_uri = ''
+            location = parent_window.get_active_document().get_location()
+            base_uri = location.get_uri() if location else ''
 
-        self.view.load_string(self.TEMPLATE.format(
+        self.view.load_html(self.TEMPLATE.format(
             body=html, css=self.styles
-        ), self.MIME_TYPE, self.ENCODING, base_uri)
+        ), base_uri)
 
     def clear_view(self):
-        self.view.load_string('', self.MIME_TYPE, self.ENCODING, '')
+        self.view.load_html('', '')

@@ -33,6 +33,7 @@ Installation
 
   :gedit-3.8: 3.8 <= gedit < to 3.10
   :gedit-3.10: gedit >= 3.10 (*3.18 has been reported to work fine*)
+  :gedit-3.22: gedit >= 3.22 (*3.22.1 tested successfully on Ubuntu 17.10*)
 
 - Put ``reST.plugin`` file in gedit's plugins directory.  The standard one
   should be ``~/.local/share/gedit/plugins/``.  Alternatively, the global
@@ -66,7 +67,8 @@ next to ``reStructuredText Preview``.
 
 The plugin is now activated, and you should have a new panel inside the
 bottom pane named ``reStructuredText Preview``. If you don't see the panel on
-the bottom of the editor window make it visible via *View / Bottom Panel*.
+the bottom of the editor window make it visible via *Burger menu* > *View* >
+*Bottom Panel*.
 
 More Features
 #############
