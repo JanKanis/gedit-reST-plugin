@@ -25,6 +25,7 @@ gi.require_version('Gtk', '3.0')
 from docutils.core import publish_parts
 from gi.repository import Gtk, WebKit2, GLib
 from os.path import abspath, dirname, join
+import threading
 
 
 class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
@@ -48,6 +49,13 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
 
     def __init__(self, styles_filename='restructuredtext.css'):
         Gtk.ScrolledWindow.__init__(self)
+
+        self.lock = threading.Lock()
+        self.alive = True
+        self.event = threading.Event()
+        self.worker = threading.Thread(target=self.rest_parser_thread, name="gedit-reST-plugin worker")
+        self.worker.start()
+        self.show_reST = False
 
         module_dir = dirname(abspath(__file__))
         css_file = join(module_dir, styles_filename)
@@ -80,10 +88,14 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
 
             text = doc.get_text(start, end, False)
 
-            self._parent_window = parent_window
-            self._text = text
-            GLib.idle_add(self.update_background)
+            self.show_rest = True
+            with self.lock:
+                self.parent_window = parent_window
+                self.text = text
+            # Only start the background thread once there is idle time, otherwise it can hold the GIL for too long, blocking the editor.
+            GLib.idle_add(self.set_event)
         else:
+            self.show_rest = False
             html = '<h3>reStructuredText Preview</h3>\n' \
                    '<p>' \
                    '<em>Switch file language to</em> reStructuredText ' \
@@ -95,13 +107,14 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
                 body=html, css=self.styles
             ), base_uri)
 
-    def update_background(self):
-        parent_window, text = self._parent_window, self._text
-        if not parent_window:
-            return False
-        self._parent_window, self._text = None, None
+    def set_event(self):
+        self.event.set()
+        return False
 
-        html = publish_parts(text, writer_name='html')['html_body']
+    def update_callback(self, html, parent_window):
+        if not self.show_rest:
+            return False
+
         location = parent_window.get_active_document().get_location()
         base_uri = location.get_uri() if location else ''
 
@@ -112,4 +125,26 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
         return False  # stop idle_add from calling us again
 
     def clear_view(self):
+        self.alive = False
+        self.show_rest = False
+        self.event.set()
         self.view.load_html('', '')
+
+    def rest_parser_thread(self):
+        while True:
+            self.event.wait()  # Block until there's something to do
+            self.event.clear()
+
+            if self.alive == False:
+                return
+
+            with self.lock:
+                parent_window, text = self.parent_window, self.text
+                self.parent_window, self.text = None, None
+            if not text:
+                continue
+
+            html = publish_parts(text, writer_name='html')['html_body']
+            # We're not allowed to call Gtk methods on this thread
+            GLib.idle_add(self.update_callback, html, parent_window)
+
