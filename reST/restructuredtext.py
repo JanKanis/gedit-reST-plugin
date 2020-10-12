@@ -23,7 +23,7 @@ gi.require_version('WebKit2', '4.0')
 gi.require_version('Gtk', '3.0')
 
 from docutils.core import publish_parts
-from gi.repository import Gtk, WebKit2
+from gi.repository import Gtk, WebKit2, GLib
 from os.path import abspath, dirname, join
 
 
@@ -79,9 +79,10 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
                 end = doc.get_iter_at_mark(doc.get_selection_bound())
 
             text = doc.get_text(start, end, False)
-            html = publish_parts(text, writer_name='html')['html_body']
-            location = parent_window.get_active_document().get_location()
-            base_uri = location.get_uri() if location else ''
+
+            self._parent_window = parent_window
+            self._text = text
+            GLib.idle_add(self.update_background)
         else:
             html = '<h3>reStructuredText Preview</h3>\n' \
                    '<p>' \
@@ -90,9 +91,25 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
                    '</p>'
             base_uri = ''
 
+            self.view.load_html(self.TEMPLATE.format(
+                body=html, css=self.styles
+            ), base_uri)
+
+    def update_background(self):
+        parent_window, text = self._parent_window, self._text
+        if not parent_window:
+            return False
+        self._parent_window, self._text = None, None
+
+        html = publish_parts(text, writer_name='html')['html_body']
+        location = parent_window.get_active_document().get_location()
+        base_uri = location.get_uri() if location else ''
+
         self.view.load_html(self.TEMPLATE.format(
             body=html, css=self.styles
         ), base_uri)
+
+        return False  # stop idle_add from calling us again
 
     def clear_view(self):
         self.view.load_html('', '')
