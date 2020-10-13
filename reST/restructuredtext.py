@@ -43,6 +43,7 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
     </head>
     <body>
     {body}
+    {scripts}
     </body>
     </html>
     """
@@ -57,6 +58,10 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
         self.worker.start()
         self.show_reST = False
 
+        # To restore scroll positions after redrawing the preview, and across selecting text
+        self.last_position = None
+        self.last_position_active = False
+
         module_dir = dirname(abspath(__file__))
         css_file = join(module_dir, styles_filename)
         with open(css_file, 'r') as styles:
@@ -69,6 +74,14 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
         self.view.show()
 
     def update_view(self, parent_window):
+    
+        if self.last_position_active:
+            print("saving scroll position")
+            self.view.run_javascript("[window.scrollX, window.scrollY]", None, self.update_view_continue, parent_window)
+        else:
+            self.update_view_continue(None, None, parent_window)
+
+    def update_view_continue(self, _view, result, parent_window):    
         view = parent_window.get_active_view()
         language = None
         if view:
@@ -77,14 +90,23 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
             if source_language:
                 language = source_language.get_name()
 
+        try:
+            if result:
+                self.last_position = self.view.run_javascript_finish(result).get_js_value().to_string()
+        except GLib.Error:
+            pass
+        print("last position set:", self.last_position)
+
         if language == 'reStructuredText':
             doc = view.get_buffer()
-            start = doc.get_start_iter()
-            end = doc.get_end_iter()
-
             if doc.get_selection_bounds():
                 start = doc.get_iter_at_mark(doc.get_insert())
                 end = doc.get_iter_at_mark(doc.get_selection_bound())
+                self.last_position_active = False
+            else:
+                start = doc.get_start_iter()
+                end = doc.get_end_iter()
+                self.last_position_active = True
 
             text = doc.get_text(start, end, False)
 
@@ -96,6 +118,7 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
             GLib.idle_add(self.set_event)
         else:
             self.show_rest = False
+            self.last_position_active = False
             html = '<h3>reStructuredText Preview</h3>\n' \
                    '<p>' \
                    '<em>Switch file language to</em> reStructuredText ' \
@@ -104,7 +127,7 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
             base_uri = ''
 
             self.view.load_html(self.TEMPLATE.format(
-                body=html, css=self.styles
+                body=html, css=self.styles, scripts=''
             ), base_uri)
 
     def set_event(self):
@@ -117,10 +140,13 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
 
         location = parent_window.get_active_document().get_location()
         base_uri = location.get_uri() if location else ''
+        script = ''
+        if self.last_position_active and self.last_position:
+            print("restoring position:", self.last_position)
+            script = f"<script>window.scroll({self.last_position})</script>\n"
+        document = self.TEMPLATE.format(body=html, css=self.styles, scripts=script)
 
-        self.view.load_html(self.TEMPLATE.format(
-            body=html, css=self.styles
-        ), base_uri)
+        self.view.load_html(document, base_uri)
 
         return False  # stop idle_add from calling us again
 
