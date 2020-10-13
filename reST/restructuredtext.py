@@ -27,7 +27,7 @@ from gi.repository import Gtk, WebKit2, GLib
 from os.path import abspath, dirname, join
 import threading
 from enum import Enum
-import sys
+import sys, os
 
 class State(Enum):
     NON_REST = 1
@@ -195,6 +195,14 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
         self.view.load_html('', '')
 
     def rest_parser_thread(self):
+        try:
+            tid = int(os.readlink('/proc/thread-self').split('/')[-1])
+            debug("reST preview rendering thread id", tid)
+            os.system(f'schedtool -B {tid}')
+        except OSError as e:
+            debug("Unable to set batch priority for reST preview rendering thread. "
+                  "This is only supposed to work on Linux")
+
         while True:
             self.event.wait()  # Block until there's something to do
             self.event.clear()
