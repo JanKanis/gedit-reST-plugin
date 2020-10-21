@@ -35,7 +35,7 @@ class State(Enum):
     SELECTION = 3
     EXIT = 4
 
-DEBUG = True
+DEBUG = False
 def debug(*args):
     if DEBUG:
         print(*args, file=sys.stderr)
