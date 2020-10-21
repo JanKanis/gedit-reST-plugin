@@ -42,8 +42,8 @@ def debug(*args):
 
 
 class PreviewArgs:
-    def __init__(self, text=None, html=None, html_type=None, parent_window=None):
-        self.text, self.html, self.html_type, self.parent_window = text, html, html_type, parent_window
+    def __init__(self, text=None, html=None, html_type=None):
+        self.text, self.html, self.html_type = text, html, html_type
 
 
 class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
@@ -66,13 +66,14 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
     </html>
     """
 
-    def __init__(self, styles_filename='restructuredtext.css'):
+    def __init__(self, parent_window, panel, styles_filename='restructuredtext.css'):
         Gtk.ScrolledWindow.__init__(self)
+
+        self.parent_window = parent_window
+        self.panel = panel
 
         self.lock = threading.Lock()
         self.event = threading.Event()
-        self.worker = threading.Thread(target=self.rest_parser_thread, name="gedit-reST-plugin worker")
-        self.worker.start()
 
         # state is the state we want to be in (and in which the text area is). It is updated when the text
         # area updates.
@@ -91,19 +92,42 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
 
         self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.set_shadow_type(Gtk.ShadowType.NONE)
-        self.view = WebKit2.WebView()
-        self.add(self.view)
+        self.viewinit = False
+
+    def init_view(self):
+        if not self.viewinit:
+            self.view = WebKit2.WebView()
+            self.add(self.view)
+            self.worker = threading.Thread(target=self.rest_parser_thread, name="gedit-reST-plugin worker")
+            self.worker.start()
+
+            self.viewinit = True
+            debug("view started")
         self.view.show()
 
-    def update_view(self, parent_window):
+    def hide(self):
+        if self.viewinit:
+            self.view.hide()
+
+    def is_visible(self):
+        return self.panel.get_visible_child() == self
+
+    def update_view(self):
         if self.state == State.EXIT:
             debug("EXIT")
             return
 
-        view = parent_window.get_active_view()
+        if self.is_visible():
+            self.init_view()
+        else:
+            debug("NOT VISIBLE")
+            self.hide()
+            return
+
+        view = self.parent_window.get_active_view()
         language = None
         if view:
-            source_language = parent_window.get_active_document().get_language()
+            source_language = self.parent_window.get_active_document().get_language()
             if source_language:
                 language = source_language.get_name()
 
@@ -123,7 +147,7 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
             text = doc.get_text(start, end, False)
 
             with self.lock:
-                self.preview_args = PreviewArgs(text=text, html_type=self.state, parent_window=parent_window)
+                self.preview_args = PreviewArgs(text=text, html_type=self.state)
             # Only start the background thread once there is idle time, otherwise it can hold the GIL for too long,
             # blocking the editor.
             GLib.idle_add(self.set_event)
@@ -136,7 +160,7 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
                    '<em>to render the document</em>' \
                    '</p>'
 
-            self.save_scroll_position(PreviewArgs(html=html, html_type=State.NON_REST, parent_window=parent_window))
+            self.save_scroll_position(PreviewArgs(html=html, html_type=State.NON_REST))
 
     def set_event(self):
         self.event.set()
@@ -173,7 +197,7 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
 
         base_uri = ''
         if self.state in [State.REST, State.SELECTION]:
-            location = args.parent_window.get_active_document().get_location()
+            location = self.parent_window.get_active_document().get_location()
             base_uri = location.get_uri() if location else ''
 
         script = ''
@@ -191,8 +215,10 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
     def clear_view(self):
         self.state = State.EXIT
         debug("state = EXIT")
+        self.parent_window, self.panel = None, None
         self.event.set()
-        self.view.load_html('', '')
+        if self.viewinit:
+            self.view.load_html('', '')
 
     def rest_parser_thread(self):
         try:
