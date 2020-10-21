@@ -17,7 +17,8 @@ Dependencies
 ------------
 
 - Python_: version >= 3.3 (-> use `mcepl/reStPlugin`_ for Python 2.x)
-- Docutils and Pygments_: ``sudo apt-get install python3-docutils``
+- Docutils and Pygments_: ``sudo apt install python3-docutils``
+- (optional) schedtool: ``sudo apt install schedtool``
 
 
 .. _mcepl/reStPlugin: https://github.com/mcepl/reStPlugin
@@ -69,6 +70,9 @@ The plugin is now activated, and you should have a new panel inside the
 bottom pane named ``reStructuredText Preview``. If you don't see the panel on
 the bottom of the editor window make it visible via *Burger menu* > *View* >
 *Bottom Panel*.
+
+If the ``schedtool`` command is available, the plugin will use that to lower
+the priority of the rendering thread.
 
 More Features
 #############
