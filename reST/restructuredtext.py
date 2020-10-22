@@ -94,7 +94,7 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
         self.set_shadow_type(Gtk.ShadowType.NONE)
         self.viewinit = False
 
-    def init_view(self):
+    def show_view(self):
         if not self.viewinit:
             self.view = WebKit2.WebView()
             self.add(self.view)
@@ -105,7 +105,7 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
             debug("view started")
         self.view.show()
 
-    def hide(self):
+    def hide_view(self):
         if self.viewinit:
             self.view.hide()
 
@@ -118,10 +118,10 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
             return
 
         if self.is_visible():
-            self.init_view()
+            self.show_view()
         else:
             debug("NOT VISIBLE")
-            self.hide()
+            self.hide_view()
             return
 
         view = self.parent_window.get_active_view()
