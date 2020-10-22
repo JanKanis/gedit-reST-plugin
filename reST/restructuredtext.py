@@ -224,6 +224,7 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
         try:
             tid = int(os.readlink('/proc/thread-self').split('/')[-1])
             debug("reST preview rendering thread id", tid)
+            # Set nice +10 and SCHED_BATCH on this thread
             os.system(f'schedtool -n 10 -B {tid}')
         except OSError as e:
             debug("Unable to set batch priority for reST preview rendering thread. "
