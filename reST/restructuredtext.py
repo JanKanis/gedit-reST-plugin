@@ -17,17 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
-import gi
-
-gi.require_version('WebKit2', '4.0')
-gi.require_version('Gtk', '3.0')
+import os
+import sys
+import threading
 
 from docutils.core import publish_parts
-from gi.repository import Gtk, WebKit2, GLib
-from os.path import abspath, dirname, join
-import threading
 from enum import Enum
-import sys, os
+from os.path import abspath, dirname, join
+
+from gi.repository import GLib, Gtk, WebKit2
 
 class State(Enum):
     NON_REST = 1
@@ -225,7 +223,9 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
             tid = int(os.readlink('/proc/thread-self').split('/')[-1])
             debug("reST preview rendering thread id", tid)
             # Set nice +10 and SCHED_BATCH on this thread
-            os.system(f'schedtool -n 10 -B {tid}')
+            exit_code = os.system(f'schedtool -n 10 -B {tid}')
+            if exit_code != 0:
+                raise OSError()
         except OSError as e:
             debug("Unable to set batch priority for reST preview rendering thread. "
                   "This is only supposed to work on Linux")
@@ -247,4 +247,3 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
             args.text = None
             # We're not allowed to call Gtk methods on this thread
             GLib.idle_add(self.save_scroll_position, args)
-
