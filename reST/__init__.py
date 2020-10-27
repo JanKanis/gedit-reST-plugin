@@ -36,23 +36,27 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
         panel_name = 'GeditReStructuredTextPanel'
         panel_title = 'reStructuredText Preview'
 
-        self._panel = RestructuredtextHtmlPanel()
-        self._panel.update_view(self.window)
+        self.bottom = self.window.get_bottom_panel()
+        self._panel = RestructuredtextHtmlPanel(self.window, self.bottom)
+        self._panel.update_view()
         self._panel.show()
 
-        bottom = self.window.get_bottom_panel()
         try:
-            bottom.add_titled(self._panel, panel_name, panel_title)
+            self.bottom.add_titled(self._panel, panel_name, panel_title)
         except AttributeError as err:
             print('Falling back to old implementation. Reason: %s' % err)
-            bottom.add_item(self._panel, panel_name, panel_title)
+            self.bottom.add_item(self._panel, panel_name, panel_title)
+        self.handler_id = self.bottom.connect("notify::visible-child", self.handle_panel_change)
 
     def do_deactivate(self):
         self._panel.clear_view()
-        bottom = self.window.get_bottom_panel()
-        bottom.remove(self._panel)
+        self.bottom.remove(self._panel)
+        self.bottom.disconnect(self.handler_id)
 
     def do_update_state(self):
-        self._panel.update_view(self.window)
+        self._panel.update_view()
+
+    def handle_panel_change(self, panel, prop):
+        self.do_update_state()
 
 # ex:et:ts=4:
