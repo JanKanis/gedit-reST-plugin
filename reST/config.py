@@ -27,37 +27,51 @@ REST_KEY_PREVIEW_PANEL = 'preview-panel'
 REST_PREVIEW_PANELS = ['bottom-panel', 'side-panel']
 
 
-def get_settings():
-    """
-    Read the compiled settings schema from disk.
-    """
-    schemas_path = os.path.join(BASE_PATH, 'schemas')
-    schema_source = Gio.SettingsSchemaSource.new_from_directory(
-        schemas_path, Gio.SettingsSchemaSource.get_default(), False)
-    schema = schema_source.lookup(REST_KEY_BASE, False)
+class Settings:
 
-    settings = Gio.Settings.new_full(schema, None, None)
-    return settings
+    def __init__(self):
+        """
+        Read the compiled settings schema from disk.
+        """
+        schemas_path = os.path.join(BASE_PATH, 'schemas')
+        schema_source = Gio.SettingsSchemaSource.new_from_directory(
+            schemas_path, Gio.SettingsSchemaSource.get_default(), False)
+        schema = schema_source.lookup(REST_KEY_BASE, False)
+        self.settings = Gio.Settings.new_full(schema, None, None)
+
+    def get_panel(self, window):
+        """
+        Return the configured display panel of the GEdit window.
+        """
+        index = self.get_panel_index()
+        panels = {
+            0: window.get_bottom_panel,
+            1: window.get_side_panel,
+        }
+        return panels[index]()
+
+    def get_panel_index(self):
+        return self.settings.get_int(REST_KEY_PREVIEW_PANEL)
+
+    def set_panel_index(self, index):
+        self.settings.set_int(REST_KEY_PREVIEW_PANEL, index)
 
 
-class RestructuredtextConfigWidget(object):
+class RestructuredtextConfigWidget:
 
     def __init__(self, datadir):
-        super().__init__()
-
         self._ui_path = os.path.join(datadir, 'config.ui')
-        self._settings = get_settings()
         self._ui = Gtk.Builder()
 
     def configure_widget(self):
         self._ui.add_from_file(self._ui_path)
 
-        preview_panel = self._settings.get_int(REST_KEY_PREVIEW_PANEL)
+        configured_panel = Settings().get_panel_index()
 
         for index, panel_id in enumerate(REST_PREVIEW_PANELS):
             radiobutton = self._ui.get_object(panel_id)
             radiobutton.connect('toggled', self.on_button_toggled, panel_id)
-            radiobutton.set_active(preview_panel == index)
+            radiobutton.set_active(configured_panel == index)
 
         widget = self._ui.get_object('restructuredtext_preferences')
         return widget
@@ -65,6 +79,6 @@ class RestructuredtextConfigWidget(object):
     def on_button_toggled(self, radiobutton, panel_id):
         if radiobutton.get_active():
             index = REST_PREVIEW_PANELS.index(panel_id)
-            self._settings.set_int(REST_KEY_PREVIEW_PANEL, index)
+            self._settings.set_panel_index(index)
 
 # ex:et:ts=4:

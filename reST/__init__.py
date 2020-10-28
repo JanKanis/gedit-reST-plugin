@@ -27,7 +27,7 @@ gi.require_version('WebKit2', '4.0')
 
 from gi.repository import GObject, Gedit, PeasGtk
 
-from .config import RestructuredtextConfigWidget
+from .config import RestructuredtextConfigWidget, Settings
 from .restructuredtext import RestructuredtextHtmlPanel
 
 
@@ -45,25 +45,27 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Co
         panel_name = 'GeditReStructuredTextPanel'
         panel_title = 'reStructuredText Preview'
 
-        self.bottom = self.window.get_bottom_panel()
-        self._panel = RestructuredtextHtmlPanel(self.window, self.bottom)
+        self.container = Settings().get_panel(self.window)
+        self._panel = RestructuredtextHtmlPanel(self.window, self.container)
         self._panel.update_view()
         self._panel.show()
 
         try:
-            self.bottom.add_titled(self._panel, panel_name, panel_title)
+            self.container.add_titled(self._panel, panel_name, panel_title)
         except AttributeError as err:
             print('Falling back to old implementation. Reason: %s' % err)
-            self.bottom.add_item(self._panel, panel_name, panel_title)
-        self.handler_id = self.bottom.connect("notify::visible-child", self.handle_panel_change)
+            self.container.add_item(self._panel, panel_name, panel_title)
+        self.handler_id = self.container.connect(
+            "notify::visible-child", self.handle_panel_change)
 
     def do_deactivate(self):
         self._panel.clear_view()
-        self.bottom.remove(self._panel)
-        self.bottom.disconnect(self.handler_id)
+        self.container.remove(self._panel)
+        self.container.disconnect(self.handler_id)
 
     def do_create_configure_widget(self):
-        config_widget = RestructuredtextConfigWidget(self.plugin_info.get_data_dir())
+        data_dir = self.plugin_info.get_data_dir()
+        config_widget = RestructuredtextConfigWidget(data_dir)
         return config_widget.configure_widget()
 
     def do_update_state(self):
