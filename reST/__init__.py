@@ -18,9 +18,10 @@
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from gi.repository import GObject, Gedit
+from gi.repository import GObject, Gedit, PeasGtk, Gtk, Gio
 
 from .restructuredtext import RestructuredtextHtmlPanel
+from .preferences import PanelChoiceFrame, CONFIG_KEY_BASE, CONFIG_KEY_PANEL_CHOICE
 
 
 log = logging.getLogger(__name__)
@@ -33,9 +34,12 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
     def __init__(self):
         GObject.Object.__init__(self)
 
+        #self.settings = Gio.Settings.new(CONFIG_KEY_BASE)
+
         self._panel = None
         self.bottom = None
         self.handler_id = None
+        self.frame = None
 
     def do_activate(self):
         panel_name = 'GeditReStructuredTextPanel'
@@ -52,17 +56,30 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
             log.warning('Falling back to old implementation. Reason: %s', err)
             self.bottom.add_item(self._panel, panel_name, panel_title)
         self.handler_id = self.bottom.connect("notify::visible-child",
-                                              self.handle_panel_change)
+                                              self.on_panel_change)
+        #self.settings.connect("changed", self.on_config_change)
 
     def do_deactivate(self):
         self._panel.clear_view()
         self.bottom.remove(self._panel)
-        self.bottom.disconnect(self.handler_id)
+        self.bottom.disconnect_by_func(self.on_panel_change)
+        self.settings.disconnect_by_func(self.on_config_change)
 
     def do_update_state(self):
         self._panel.update_view()
 
-    def handle_panel_change(self, panel, prop):
+    def on_panel_change(self, panel, prop):
         self.do_update_state()
+
+    def on_config_change(self, settings, key):
+        value = settings.get_string(key)
+        print(f"setting {key} changed to {value}")
+
+
+class Preferences(GObject.Object, PeasGtk.Configurable):
+    __gtype_name__ = "ReStructuredTextPluginPreferences"
+    def do_create_configure_widget(self):
+        return PanelChoiceFrame()
+
 
 # ex:et:ts=4:

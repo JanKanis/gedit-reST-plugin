@@ -68,7 +68,8 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
     """
 
     def __init__(self, parent_window, panel,
-                 styles_filename='restructuredtext.css'):
+                 styles_filename='restructuredtext.css',
+                 gschema_filename='gschema.compiled'):
         Gtk.ScrolledWindow.__init__(self)
 
         self.parent_window = parent_window
@@ -93,6 +94,9 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
         css_file = join(module_dir, styles_filename)
         with open(css_file, 'r') as styles:
             self.styles = styles.read()
+
+        gschema_file = join(module_dir, gschema_filename)
+
 
         self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.set_shadow_type(Gtk.ShadowType.NONE)
