@@ -17,10 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from gi.repository import GObject, Gedit
 
 from .restructuredtext import RestructuredtextHtmlPanel
 
+
+log = logging.getLogger(__name__)
 
 class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
     __gtype_name__ = "ReStructuredTextPlugin"
@@ -31,6 +34,8 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
         GObject.Object.__init__(self)
 
         self._panel = None
+        self.bottom = None
+        self.handler_id = None
 
     def do_activate(self):
         panel_name = 'GeditReStructuredTextPanel'
@@ -44,9 +49,10 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
         try:
             self.bottom.add_titled(self._panel, panel_name, panel_title)
         except AttributeError as err:
-            print('Falling back to old implementation. Reason: %s' % err)
+            log.warning('Falling back to old implementation. Reason: %s', err)
             self.bottom.add_item(self._panel, panel_name, panel_title)
-        self.handler_id = self.bottom.connect("notify::visible-child", self.handle_panel_change)
+        self.handler_id = self.bottom.connect("notify::visible-child",
+                                              self.handle_panel_change)
 
     def do_deactivate(self):
         self._panel.clear_view()
