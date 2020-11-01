@@ -1,28 +1,44 @@
 reStructuredText Plugin
 =======================
 
-This is a little how-to for using the reStructuredText_ plugin inside gedit_.
+A plugin for GNOME's text editor `gedit`_ to render `reStructuredText`_.
 
-.. image:: http://farm3.static.flickr.com/2256/2259897373_d47ecf0983_o_d.png
-    :scale: 100
-    :alt: reSt Plugin Image
+.. image:: doc/screenshots/plugin-side-panel.png
+    :scale: 50%
+    :alt: reST plugin in side panel
     :align: center
-    :target: http://farm3.static.flickr.com/2247/2259897529_aa85f5f540_b.jpg
+    :target: https://github.com/bittner/gedit-reST-plugin/blob/master/doc/screenshots/plugin-side-panel.png
+
+Layout Options
+--------------
+
+.. image:: doc/screenshots/plugin-preferences-dialog.png
+    :scale: 50%
+    :alt: reST plugin preferences
+    :align: left
+    :target: https://github.com/bittner/gedit-reST-plugin/blob/master/doc/screenshots/plugin-preferences-dialog.png
+
+.. image:: doc/screenshots/plugin-bottom-panel.png
+    :scale: 50%
+    :alt: reST plugin in bottom panel
+    :align: right
+    :target: https://github.com/bittner/gedit-reST-plugin/blob/master/doc/screenshots/plugin-bottom-panel.png
 
 
-.. _reStructuredText: http://docutils.sourceforge.net/
 .. _gedit: https://wiki.gnome.org/Apps/Gedit
+.. _reStructuredText: https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
 
 Dependencies
 ------------
 
-- Python_: version >= 3.3 (-> use `mcepl/reStPlugin`_ for Python 2.x)
-- Docutils and Pygments_: ``sudo apt install python3-docutils``
+- `Python`_: version >= 3.3 (-> use `mcepl/reStPlugin`_ for Python 2.x)
+- `Docutils`_ and `Pygments`_: ``sudo apt install python3-docutils``
 - (optional) schedtool: ``sudo apt install schedtool``
 
 
-.. _mcepl/reStPlugin: https://github.com/mcepl/reStPlugin
 .. _Python: http://www.python.org/
+.. _mcepl/reStPlugin: https://github.com/mcepl/reStPlugin
+.. _Docutils: http://docutils.sourceforge.net/
 .. _Pygments: http://pygments.org/
 
 Installation
