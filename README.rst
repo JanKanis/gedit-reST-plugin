@@ -34,7 +34,8 @@ Installation
 
   :gedit-3.8: 3.8 <= gedit < to 3.10
   :gedit-3.10: gedit >= 3.10 (*3.18 has been reported to work fine*)
-  :gedit-3.22: gedit >= 3.22 (*3.22.1 tested successfully on Ubuntu 17.10*)
+  :gedit-3.22: gedit >= 3.22 (*3.22.1 verified on Ubuntu 17.10*)
+  :gedit-3.28: gedit >= 3.28 (*3.28.1 verified on Ubuntu 18.04*)
 
 - Put ``reST.plugin`` file in gedit's plugins directory.  The standard one
   should be ``~/.local/share/gedit/plugins/``.  Alternatively, the global
@@ -48,14 +49,18 @@ You should then obtain something like this::
     .../plugins/
             reST.plugin
             reST/
+                schemas/
+                  gschemas.compiled
+                  org.gnome.gedit.plug...
                 __init__.py
-                makeTable.py
-                etc.
+                config.py
+                restructuredtext.py
+                ...
 
-- Follow the instructions in `<syntax/README.rst>`_ to activate syntax highlighting.
-  (Note that recent versions of gedit already ship with this included.  Check
-  the language mode drop-down in the footer bar of gedit's editor window.)
-
+- Syntax highlighting works out-of-the-box with any new version of gedit.
+  (Check the language mode drop-down in the footer bar of the editor window.)
+  For older versions follow the instructions in `<syntax/README.rst>`_
+  to activate syntax highlighting.
 
 
 .. _releases: https://github.com/bittner/gedit-reST-plugin/releases
@@ -63,13 +68,15 @@ You should then obtain something like this::
 Usage
 -----
 
-Activate the plugin via *Edit / Preferences / Plugins* and check the checkbox
-next to ``reStructuredText Preview``.
+Activate the plugin via *Edit > Preferences > Plugins* and check the checkbox
+next to **reStructuredText Preview**. Optionally, you can also choose whether
+you want the preview displayed in the bottom or the side panel.
 
-The plugin is now activated, and you should have a new panel inside the
-bottom pane named ``reStructuredText Preview``. If you don't see the panel on
-the bottom of the editor window make it visible via *Burger menu* > *View* >
-*Bottom Panel*.
+The plugin is now activated, and you should have a new tab inside the
+bottom panel named *reStructuredText*. If you don't see the panel on
+the bottom of the editor window make it visible via *View > Bottom Panel*.
+If you use the side panel operate the drop-down selector on top of it
+to switch between *Documents* view and *reStructuredText*.
 
 If the ``schedtool`` command is available, the plugin will use that to lower
 the priority of the rendering thread.

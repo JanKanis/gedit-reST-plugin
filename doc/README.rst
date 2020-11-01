@@ -1,8 +1,8 @@
 reStructuredText plugin
 =======================
 
-This is a little how-to for using the reStructuredText plugin inside 
-`GEdit <https://wiki.gnome.org/Apps/Gedit>`_.
+This is a little how-to for using the reStructuredText plugin inside
+`gedit <https://wiki.gnome.org/Apps/Gedit>`_.
 
 .. image:: http://farm3.static.flickr.com/2256/2259897373_d47ecf0983_o_d.png
     :scale: 100
@@ -10,7 +10,8 @@ This is a little how-to for using the reStructuredText plugin inside
     :align: center
     :target: http://farm3.static.flickr.com/2247/2259897529_aa85f5f540_b.jpg
 
-**Note:** To activate syntax highlighting see `<syntax/README.rst>`_.
+**Note:** Syntax highlighting works out-of-the-box with any new version of
+gedit. For older versions see `<syntax/README.rst>`_.
 
 Dependencies
 ------------
@@ -23,7 +24,7 @@ Dependencies
 Installation
 ------------
 
-- Put ``reST.plugin`` file in GEdit's plugins directory.
+- Put ``reST.plugin`` file in gedit's plugins directory.
   The standard one should be ``~/.local/share/gedit/plugins/``. Alternatively,
   the global directory is something like ``/usr/lib/i386-linux-gnu/gedit/plugins/``.
 
@@ -34,58 +35,77 @@ You should then obtain something like this: ::
     .../plugins/
             reST.plugin
             reST/
+                schemas/
+                  gschemas.compiled
+                  org.gnome.gedit.plug...
                 __init__.py
-                makeTable.py
-                etc.
+                config.py
+                restructuredtext.py
+                ...
 
 Usage
 -----
 
-Activate the plugin via *Edit / Preferences / Plugins* and check the checkbox
-next to ``reStructuredText Preview``.
+Activate the plugin via *Edit > Preferences > Plugins* and check the checkbox
+next to **reStructuredText Preview**. Optionally, you can also choose whether
+you want the preview displayed in the bottom or the side panel.
 
-The plugin is now activated, and you should have a new panel inside the 
-bottom pane named ``reStructuredText Preview``. If you don't see the panel on
-the bottom of the editor window make it visible via *View / Bottom Panel*.
+The plugin is now activated, and you should have a new tab inside the
+bottom panel named *reStructuredText*. If you don't see the panel on
+the bottom of the editor window make it visible via *View > Bottom Panel*.
+If you use the side panel operate the drop-down selector on top of it
+to switch between *Documents* view and *reStructuredText*.
 
-Shortcuts
-#########
+Features
+########
 
-There's only one shortcut for the moment: ``Ctrl+Shift+R``
+:Selection:
+    You can select some text to render only the selected portion of the
+    document. If there's no selection, the entire document is processed.
 
-``Ctrl+Shift+R`` is used to refresh the generated HTML view inside
-``reStructuredText Preview`` pane. If there's some selected text, the conversion
-will only process the selected portion of the text. If there's no selection, the
-entire document is processed. This may be useful for trouble shooting.
+    You may find this useful for trouble-shooting markup directives.
 
-Menu
-####
+Broken Features
+###############
 
-The ``Tools`` menu is populated with several options:
+➜ *Please contribute to bring these features back in the new implementation!*
 
-- ``reStructuredText Preview`` refreshes the preview pane (same as above)
-- ``Create table`` is useful for creating simple reStructuredText tables
+:Reload:
+    It used to be possible to force re-rendering of the reStructuredText
+    document using the <kbd>Ctrl</kbd>+<kbd>R</kbd> keyboard shortcut.
 
-**Example:** Enter the two folling lines in gedit, select them and activate
-``Create table``: ::
+:Tools:
+    The *Tools* menu used to be populated with several options:
 
-    one,two,tree
-    First,Second,Third
+    - *reStructuredText Preview* refreshes the preview pane
+      (<kbd>Ctrl</kbd>+<kbd>R</kbd>)
 
-The output will be:
+    - *Create table* is useful for creating simple reStructuredText tables
 
-=========  ==========  =========
-   one        two         tree  
-=========  ==========  =========
-  First      Second      Third  
-=========  ==========  =========
+      **Example:** Enter the two following lines in gedit, select them and
+      trigger *Create table*:
 
-- ``Paste Code`` maybe useful to paste some parts of code using
-  `Pygments <http://pygments.org/>`_'s ``sourcecode`` directive.
-  Just invoke ``Paste Code`` with something in your clipboard and
-  you're done. You'll have to adjust the language afterwards.
+      .. code-block:: reStructuredText
 
-- ``--> HTML``, ``--> LaTeX``, ``--> LibreOffice``: are convenient ways to
-  export your reStructuredText docs to the given formats with custom *
-  stylesheets. If you're not happy with the formatting go ahead and modify
-  the stylesheets!
+        one,two,tree
+        First,Second,Third
+
+      The output will be:
+
+      .. code-block:: reStructuredText
+
+        =========  ==========  =========
+          one        two         tree
+        =========  ==========  =========
+          First      Second      Third
+        =========  ==========  =========
+
+    - *Paste Code* maybe useful to paste some parts of code using
+      `Pygments <http://pygments.org/>`_'s ``sourcecode`` directive.
+      Just invoke *Paste Code* with something in your clipboard and
+      you're done. You'll have to adjust the language afterwards.
+
+    - *➜ HTML*, *➜ LaTeX*, *➜ LibreOffice*: are convenient ways to export
+      your reStructuredText docs to the given formats with custom
+      stylesheets. If you're not happy with the formatting go ahead and
+      modify the stylesheets yourself.
