@@ -17,6 +17,7 @@ restructuredtext.py - reStructuredText HTML preview panel
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import os
 import sys
 import threading
@@ -27,16 +28,15 @@ from os.path import abspath, dirname, join
 
 from gi.repository import GLib, Gtk, WebKit2
 
+logging.basicConfig(format="[%(levelname)s] %(message)s", level=logging.INFO)
+log = logging.getLogger(__name__)
+
+
 class State(Enum):
     NON_REST = 1
     REST = 2
     SELECTION = 3
     EXIT = 4
-
-DEBUG = False
-def debug(*args):
-    if DEBUG:
-        print(*args, file=sys.stderr)
 
 
 class PreviewArgs:
@@ -100,7 +100,7 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
             self.worker.start()
 
             self.viewinit = True
-            debug("view started")
+            log.debug("view started")
         self.view.show()
 
     def hide_view(self):
@@ -112,13 +112,13 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
 
     def update_view(self):
         if self.state == State.EXIT:
-            debug("EXIT")
+            log.debug("EXIT")
             return
 
         if self.is_visible():
             self.show_view()
         else:
-            debug("NOT VISIBLE")
+            log.debug("NOT VISIBLE")
             self.hide_view()
             return
 
@@ -133,12 +133,12 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
             doc = view.get_buffer()
             if doc.get_selection_bounds():
                 self.state = State.SELECTION
-                debug("state = SELECTION")
+                log.debug("state = SELECTION")
                 start = doc.get_iter_at_mark(doc.get_insert())
                 end = doc.get_iter_at_mark(doc.get_selection_bound())
             else:
                 self.state = State.REST
-                debug("state = REST")
+                log.debug("state = REST")
                 start = doc.get_start_iter()
                 end = doc.get_end_iter()
 
@@ -152,7 +152,7 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
             GLib.idle_add(self.set_event)
         else:
             self.state = State.NON_REST
-            debug("state = NON_REST")
+            log.debug("state = NON_REST")
             html = '<h3>reStructuredText Preview</h3>\n' \
                    '<strong>Note:</strong>' \
                    '<p>' \
@@ -171,7 +171,7 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
             return False
 
         if self.scroll_position_valid:
-            debug("saving scroll position")
+            log.debug("saving scroll position")
             self.view.run_javascript("[window.scrollX, window.scrollY]",
                             None, self.display_html, args)
         else:
@@ -188,13 +188,12 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
             try:
                 self.last_position = self.view.run_javascript_finish(scrollresult) \
                                         .get_js_value().to_string()
-                debug("last_position = ", self.last_position)
-            except GLib.Error as e:
-                print("Error retrieving reST preview scroll position:", e,
-                      file=sys.stderr)
+                log.debug("last_position = %s" % self.last_position)
+            except GLib.Error as err:
+                log.error("Error retrieving reST preview scroll position: %s" % err)
 
         if args.html_type != self.state:
-            debug("stale callback", self.state, ", not rendering html")
+            log.debug("stale callback %s, not rendering html" % self.state)
             return
 
         base_uri = ''
@@ -203,20 +202,20 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
             base_uri = location.get_uri() if location else ''
 
         script = ''
-        debug("last_position:", self.last_position)
+        log.debug("last_position: %s" % self.last_position)
         if self.state == State.REST and self.last_position:
             script = f"<script>window.scroll({self.last_position})</script>\n"
-            debug("restoring position in new html")
+            log.debug("restoring position in new html")
         document = self.TEMPLATE.format(body=args.html, css=self.styles, scripts=script)
 
-        debug("Rendering", self.state, "html")
+        log.debug("Rendering %s html" % self.state)
         self.view.load_html(document, base_uri)
         self.scroll_position_valid = (self.state == State.REST)
-        debug("scroll_position_valid =", self.scroll_position_valid)
+        log.debug("scroll_position_valid = %s" % self.scroll_position_valid)
 
     def clear_view(self):
         self.state = State.EXIT
-        debug("state = EXIT")
+        log.debug("state = EXIT")
         self.parent_window, self.panel = None, None
         self.event.set()
         if self.viewinit:
@@ -225,15 +224,15 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
     def rest_parser_thread(self):
         try:
             tid = int(os.readlink('/proc/thread-self').split('/')[-1])
-            debug("reST preview rendering thread id", tid)
+            log.debug("reST preview rendering thread id %s" % tid)
 
             # Set nice +10 and SCHED_BATCH on this thread
             exit_code = os.system(f'schedtool -n 10 -B {tid}')
             if exit_code != 0:
                 raise OSError()
         except OSError as e:
-            debug("Unable to set batch priority for reST preview rendering thread. "
-                  "This is only supposed to work on Linux")
+            log.debug("Unable to set batch priority for reST preview rendering"
+                      " thread. This is only supposed to work on Linux.")
 
         while True:
             # Block until there's something to do
