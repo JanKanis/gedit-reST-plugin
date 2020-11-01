@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-
-# restructuredtext.py - reStructuredText HTML preview panel
-#
-# Copyright (C) 2014-2018 - Peter Bittner
+"""
+restructuredtext.py - reStructuredText HTML preview panel
+"""
+# Copyright (C) 2014-2020 - Peter Bittner and contributors
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,9 +44,9 @@ class PreviewArgs:
         self.text, self.html, self.html_type = text, html, html_type
 
 
-class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
+class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
     """
-    A Gtk panel displaying HTML rendered from ``.rst`` source code.
+    A GtkContainer displaying HTML rendered from ``.rst`` source code.
     """
     MIME_TYPE = 'text/html'
     ENCODING = 'UTF-8'
@@ -65,7 +65,7 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
     """
 
     def __init__(self, parent_window, panel, styles_filename='restructuredtext.css'):
-        Gtk.ScrolledWindow.__init__(self)
+        super().__init__()
 
         self.parent_window = parent_window
         self.panel = panel
@@ -73,14 +73,14 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
         self.lock = threading.Lock()
         self.event = threading.Event()
 
-        # state is the state we want to be in (and in which the text area is). It is updated when the text
-        # area updates.
+        # The state we want to be in (and in which the text area is).
+        # It is updated when the text area updates.
         self.state = State.NON_REST
 
-        # To restore scroll positions after redrawing the preview, and across selecting text. Contains the most recent
-        # position when we were showing a (non-selection) reST preview.
+        # To restore scroll positions after redrawing the preview, and across selecting text.
+        # Contains the most recent position when we were showing a (non-selection) reST preview.
         self.last_position = None
-        # scroll_position_valid indicates if the preview panel currently contains a reST (non-selection) preview
+        # indicates if the preview panel currently contains a reST (non-selection) preview
         self.scroll_position_valid = False
 
         module_dir = dirname(abspath(__file__))
@@ -146,16 +146,18 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
 
             with self.lock:
                 self.preview_args = PreviewArgs(text=text, html_type=self.state)
-            # Only start the background thread once there is idle time, otherwise it can hold the GIL for too long,
-            # blocking the editor.
+
+            # Only start the background thread once there is idle time,
+            # otherwise it can hold the GIL for too long, blocking the editor.
             GLib.idle_add(self.set_event)
         else:
             self.state = State.NON_REST
             debug("state = NON_REST")
             html = '<h3>reStructuredText Preview</h3>\n' \
+                   '<strong>Note:</strong>' \
                    '<p>' \
-                   '<em>Switch file language to</em> reStructuredText ' \
-                   '<em>to render the document</em>' \
+                   '<em>Switch file language to</em> reStructuredText, ' \
+                   '<em>or load a .rst file, to render the document.</em>' \
                    '</p>'
 
             self.save_scroll_position(PreviewArgs(html=html, html_type=State.NON_REST))
@@ -174,7 +176,9 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
                             None, self.display_html, args)
         else:
             self.display_html(None, None, args)
-        return False  # stop idle_add from calling us again
+
+        # stop idle_add from calling us again
+        return False
 
     def display_html(self, _view, scrollresult, args):
         if self.state == State.EXIT:
@@ -222,6 +226,7 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
         try:
             tid = int(os.readlink('/proc/thread-self').split('/')[-1])
             debug("reST preview rendering thread id", tid)
+
             # Set nice +10 and SCHED_BATCH on this thread
             exit_code = os.system(f'schedtool -n 10 -B {tid}')
             if exit_code != 0:
@@ -231,7 +236,8 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
                   "This is only supposed to work on Linux")
 
         while True:
-            self.event.wait()  # Block until there's something to do
+            # Block until there's something to do
+            self.event.wait()
             self.event.clear()
 
             if self.state == State.EXIT:
@@ -245,5 +251,6 @@ class RestructuredtextHtmlPanel(Gtk.ScrolledWindow):
 
             args.html = publish_parts(args.text, writer_name='html')['html_body']
             args.text = None
+
             # We're not allowed to call Gtk methods on this thread
             GLib.idle_add(self.save_scroll_position, args)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-
-# config.py -- Config dialog
-#
+"""
+config.py -- Config dialog
+"""
 # Copyright (C) 2020 - Peter Bittner
 #
 # This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,9 @@ REST_PREVIEW_PANELS = ['bottom-panel', 'side-panel']
 
 
 class Settings:
+    """
+    Gtk settings schema and settings wrapper.
+    """
 
     def __init__(self):
         """
@@ -41,7 +44,7 @@ class Settings:
 
     def get_panel(self, window):
         """
-        Return the configured display panel of the GEdit window.
+        Return the configured display panel of the gedit window.
         """
         index = self.get_panel_index()
         panels = {
@@ -58,15 +61,21 @@ class Settings:
 
 
 class RestructuredtextConfigWidget:
+    """
+    Preferences dialog factory.
+    """
 
-    def __init__(self, datadir):
+    def __init__(self, parent):
+        self._parent = parent
+        datadir = parent.plugin_info.get_data_dir()
         self._ui_path = os.path.join(datadir, 'config.ui')
         self._ui = Gtk.Builder()
+        self._settings = Settings()
 
     def configure_widget(self):
         self._ui.add_from_file(self._ui_path)
 
-        configured_panel = Settings().get_panel_index()
+        configured_panel = self._settings.get_panel_index()
 
         for index, panel_id in enumerate(REST_PREVIEW_PANELS):
             radiobutton = self._ui.get_object(panel_id)
@@ -78,7 +87,9 @@ class RestructuredtextConfigWidget:
 
     def on_button_toggled(self, radiobutton, panel_id):
         if radiobutton.get_active():
+            # self._parent.do_deactivate()
             index = REST_PREVIEW_PANELS.index(panel_id)
             self._settings.set_panel_index(index)
+            # self._parent.do_activate()
 
 # ex:et:ts=4:

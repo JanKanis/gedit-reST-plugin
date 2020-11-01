@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-
-# __init__.py - HTML preview for reStructuredText (.rst) plugin
-#
+"""
+__init__.py - HTML preview for reStructuredText (.rst) plugin
+"""
 # Copyright (C) 2014-2018 - Peter Bittner
 #
 # This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@ gi.require_version('WebKit2', '4.0')
 from gi.repository import GObject, Gedit, PeasGtk
 
 from .config import RestructuredtextConfigWidget, Settings
-from .restructuredtext import RestructuredtextHtmlPanel
+from .restructuredtext import RestructuredtextHtmlContainer
 
 
 class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configurable):
@@ -37,39 +37,42 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Co
     window = GObject.Property(type=Gedit.Window)
 
     def __init__(self):
-        GObject.Object.__init__(self)
+        super().__init__()
 
-        self._panel = None
+        self.display_panel = None
+        self.html_container = None
+        self.handler_id = None
 
     def do_activate(self):
         panel_name = 'GeditReStructuredTextPanel'
-        panel_title = 'reStructuredText Preview'
+        panel_title = 'reStructuredText'
 
-        self.container = Settings().get_panel(self.window)
-        self._panel = RestructuredtextHtmlPanel(self.window, self.container)
-        self._panel.update_view()
-        self._panel.show()
+        self.display_panel = Settings().get_panel(self.window)
+        self.html_container = RestructuredtextHtmlContainer(
+            self.window, self.display_panel)
+        self.html_container.update_view()
+        self.html_container.show_now()
+        self.display_panel.show_now()
 
         try:
-            self.container.add_titled(self._panel, panel_name, panel_title)
+            self.display_panel.add_titled(self.html_container, panel_name, panel_title)
         except AttributeError as err:
             print('Falling back to old implementation. Reason: %s' % err)
-            self.container.add_item(self._panel, panel_name, panel_title)
-        self.handler_id = self.container.connect(
+            self.display_panel.add_item(self.html_container, panel_name, panel_title)
+        self.handler_id = self.display_panel.connect(
             "notify::visible-child", self.handle_panel_change)
 
     def do_deactivate(self):
-        self._panel.clear_view()
-        self.container.remove(self._panel)
-        self.container.disconnect(self.handler_id)
+        self.html_container.clear_view()
+        self.display_panel.remove(self.html_container)
+        self.display_panel.disconnect(self.handler_id)
 
     def do_create_configure_widget(self):
-        data_dir = self.plugin_info.get_data_dir()
-        config_widget = RestructuredtextConfigWidget(data_dir)
+        config_widget = RestructuredtextConfigWidget(self)
         return config_widget.configure_widget()
 
     def do_update_state(self):
-        self._panel.update_view()
+        self.html_container.update_view()
 
     def handle_panel_change(self, panel, prop):
         self.do_update_state()
