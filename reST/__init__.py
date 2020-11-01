@@ -17,6 +17,7 @@ __init__.py - HTML preview for reStructuredText (.rst) plugin
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import gi
 
 gi.require_version('Gtk', '3.0')
@@ -31,7 +32,11 @@ from .config import RestructuredtextConfigWidget, Settings
 from .restructuredtext import RestructuredtextHtmlContainer
 
 
-class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Configurable):
+log = logging.getLogger(__name__)
+
+
+class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable,
+                             PeasGtk.Configurable):
     __gtype_name__ = "ReStructuredTextPlugin"
 
     window = GObject.Property(type=Gedit.Window)
@@ -55,10 +60,12 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable, PeasGtk.Co
         self.display_panel.show_now()
 
         try:
-            self.display_panel.add_titled(self.html_container, panel_name, panel_title)
+            self.display_panel.add_titled(self.html_container, panel_name,
+                                          panel_title)
         except AttributeError as err:
-            print('Falling back to old implementation. Reason: %s' % err)
-            self.display_panel.add_item(self.html_container, panel_name, panel_title)
+            log.warning('Falling back to old implementation. Reason: %s', err)
+            self.display_panel.add_item(self.html_container, panel_name,
+                                        panel_title)
         self.handler_id = self.display_panel.connect(
             "notify::visible-child", self.handle_panel_change)
 
