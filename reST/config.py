@@ -18,6 +18,7 @@ config.py -- Config dialog
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 import os
+import logging
 
 from gi.repository import Gio, Gtk
 
@@ -27,10 +28,22 @@ REST_KEY_PREVIEW_PANEL = 'preview-panel'
 REST_PREVIEW_PANELS = ['bottom-panel', 'side-panel']
 
 
+log = logging.getLogger(__name__)
+
+
 class Settings:
     """
     Gtk settings schema and settings wrapper.
     """
+
+    _instance = None
+
+    @classmethod
+    def get(cls):
+        "return the singleton instance"
+        if cls._instance is None:
+            cls._instance = Settings()
+        return cls._instance
 
     def __init__(self):
         """
@@ -42,22 +55,28 @@ class Settings:
         schema = schema_source.lookup(REST_KEY_BASE, False)
         self.settings = Gio.Settings.new_full(schema, None, None)
 
-    def get_panel(self, window):
+    def get_panel(self):
         """
-        Return the configured display panel of the gedit window.
+        Return the name of the configured display panel of the gedit window.
         """
-        index = self.get_panel_index()
         panels = {
-            0: window.get_bottom_panel,
-            1: window.get_side_panel,
+            0: 'bottom',
+            1: 'side',
         }
-        return panels[index]()
+        return panels[self.get_panel_index()]
 
     def get_panel_index(self):
         return self.settings.get_int(REST_KEY_PREVIEW_PANEL)
 
     def set_panel_index(self, index):
         self.settings.set_int(REST_KEY_PREVIEW_PANEL, index)
+
+    def connect(self, callback, *args):
+        return self.settings.connect("changed::"+REST_KEY_PREVIEW_PANEL,
+                                     callback, *args)
+
+    def disconnect_by_func(self, callback_func):
+        self.settings.disconnect_by_func(callback_func)
 
 
 class RestructuredtextConfigWidget:
@@ -70,7 +89,7 @@ class RestructuredtextConfigWidget:
         datadir = parent.plugin_info.get_data_dir()
         self._ui_path = os.path.join(datadir, 'config.ui')
         self._ui = Gtk.Builder()
-        self._settings = Settings()
+        self._settings = Settings.get()
 
     def configure_widget(self):
         self._ui.add_from_file(self._ui_path)

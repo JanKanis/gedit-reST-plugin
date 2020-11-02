@@ -46,18 +46,32 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable,
 
         self.display_panel = None
         self.html_container = None
-        self.handler_id = None
 
     def do_activate(self):
-        panel_name = 'GeditReStructuredTextPanel'
-        panel_title = 'reStructuredText'
-
-        self.display_panel = Settings().get_panel(self.window)
+        log.debug("panel index: %s", Settings.get().get_panel_index())
+        self.display_panel = self.get_panel()
         self.html_container = RestructuredtextHtmlContainer(
             self.window, self.display_panel)
-        self.html_container.update_view()
+        self.add_container_to_panel()
         self.html_container.show_now()
         self.display_panel.show_now()
+        self.html_container.update_view()
+
+        Settings.get().connect(self.on_panel_setting_change)
+
+    def get_panel(self):
+        panel_name = Settings.get().get_panel()
+        if panel_name == 'side':
+            return self.window.get_side_panel()
+        elif panel_name == 'bottom':
+            return self.window.get_bottom_panel()
+        else:
+            raise AssertionError(f"got unsupported panel name {panel_name}, "
+                                 f"expecting 'side' or 'bottom'")
+
+    def add_container_to_panel(self):
+        panel_name = 'GeditReStructuredTextPanel'
+        panel_title = 'reStructuredText'
 
         try:
             self.display_panel.add_titled(self.html_container, panel_name,
@@ -66,22 +80,37 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable,
             log.warning('Falling back to old implementation. Reason: %s', err)
             self.display_panel.add_item(self.html_container, panel_name,
                                         panel_title)
-        self.handler_id = self.display_panel.connect(
-            "notify::visible-child", self.handle_panel_change)
+        self.html_container.set_panel(self.display_panel)
+        self.display_panel.connect("notify::visible-child",
+                                   self.do_update_state)
+
+    def remove_container_from_panel(self):
+        self.display_panel.disconnect_by_func(self.do_update_state)
+        self.display_panel.remove(self.html_container)
 
     def do_deactivate(self):
         self.html_container.clear_view()
         self.display_panel.remove(self.html_container)
-        self.display_panel.disconnect(self.handler_id)
+        self.display_panel.disconnect_by_func(self.do_update_state)
+        Settings.get().disconnect_by_func(self.on_panel_setting_change)
 
     def do_create_configure_widget(self):
         config_widget = RestructuredtextConfigWidget(self)
         return config_widget.configure_widget()
 
-    def do_update_state(self):
+    def do_update_state(self, *ignored):
         self.html_container.update_view()
 
-    def handle_panel_change(self, panel, prop):
+    def on_panel_setting_change(self, settings, setting):
+        new_panel = self.get_panel()
+        if new_panel is self.display_panel:
+            return
+        log.debug("Panel changed to '%s'", Settings.get().get_panel())
+
+        self.remove_container_from_panel()
+
+        self.display_panel = new_panel
+        self.add_container_to_panel()
         self.do_update_state()
 
 # ex:et:ts=4:
