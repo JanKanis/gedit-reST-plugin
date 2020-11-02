@@ -84,12 +84,13 @@ class RestructuredtextConfigWidget:
     Preferences dialog factory.
     """
 
-    def __init__(self, parent):
-        self._parent = parent
-        datadir = parent.plugin_info.get_data_dir()
+    def __init__(self, plugin_instance):
+        self._plugin_instance = plugin_instance
+        datadir = plugin_instance.plugin_info.get_data_dir()
         self._ui_path = os.path.join(datadir, 'config.ui')
         self._ui = Gtk.Builder()
         self._settings = Settings.get()
+        self._last_choice = None
 
     def configure_widget(self):
         self._ui.add_from_file(self._ui_path)
@@ -100,15 +101,20 @@ class RestructuredtextConfigWidget:
             radiobutton = self._ui.get_object(panel_id)
             radiobutton.connect('toggled', self.on_button_toggled, panel_id)
             radiobutton.set_active(configured_panel == index)
+            if configured_panel == index:
+                self._last_choice = index
 
         widget = self._ui.get_object('restructuredtext_preferences')
         return widget
 
     def on_button_toggled(self, radiobutton, panel_id):
         if radiobutton.get_active():
-            # self._parent.do_deactivate()
             index = REST_PREVIEW_PANELS.index(panel_id)
             self._settings.set_panel_index(index)
-            # self._parent.do_activate()
+            # preview container has been moved to the new panel at this point
+            if self._last_choice is not None and self._last_choice != index:
+                self._plugin_instance.force_show_preview()
+                self._plugin_instance.do_update_state()
+            self._last_choice = index
 
 # ex:et:ts=4:
