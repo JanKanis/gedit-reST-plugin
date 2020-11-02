@@ -28,7 +28,7 @@ from os.path import abspath, dirname, join
 from gi.repository import GLib, Gtk, WebKit2
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
 
 
 class State(Enum):
@@ -93,6 +93,9 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
         self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.set_shadow_type(Gtk.ShadowType.NONE)
         self.viewinit = False
+
+    def set_panel(self, new_panel):
+        self.panel = new_panel
 
     def show_view(self):
         if not self.viewinit:
