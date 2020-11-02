@@ -111,6 +111,8 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable,
 
         self.display_panel = new_panel
         self.add_container_to_panel()
+        self.display_panel.set_visible(True)
+        self.display_panel.set_visible_child(self.html_container)
         self.do_update_state()
 
 # ex:et:ts=4:

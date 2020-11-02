@@ -114,7 +114,8 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
             self.view.hide()
 
     def preview_visible(self):
-        return self.panel.get_visible_child() == self
+        return (self.panel.is_visible() and
+                self.panel.get_visible_child() == self)
 
     def update_view(self):
         if self.state == State.EXIT:
