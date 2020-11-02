@@ -35,14 +35,21 @@ from .restructuredtext import RestructuredtextHtmlContainer
 log = logging.getLogger(__name__)
 
 
-class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable,
-                             PeasGtk.Configurable):
+class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
     __gtype_name__ = "ReStructuredTextPlugin"
 
     window = GObject.Property(type=Gedit.Window)
+    instance = None
 
     def __init__(self):
         super().__init__()
+
+        if ReStructuredTextPlugin.instance is not None:
+            log.warning("A new ReStructuredTextPlugin instance was "
+                        "instantiated while one already exists. "
+                        "Existing: %s; New: %s",
+                        ReStructuredTextPlugin.instance, self)
+        ReStructuredTextPlugin.instance = self
 
         self.display_panel = None
         self.html_container = None
@@ -93,10 +100,7 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable,
         self.display_panel.remove(self.html_container)
         self.display_panel.disconnect_by_func(self.do_update_state)
         Settings.get().disconnect_by_func(self.on_panel_setting_change)
-
-    def do_create_configure_widget(self):
-        config_widget = RestructuredtextConfigWidget(self)
-        return config_widget.configure_widget()
+        ReStructuredTextPlugin.instance = None
 
     def do_update_state(self, *ignored):
         self.html_container.update_view()
@@ -111,8 +115,24 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable,
 
         self.display_panel = new_panel
         self.add_container_to_panel()
+        self.do_update_state()
+
+    def force_show_preview(self):
         self.display_panel.set_visible(True)
         self.display_panel.set_visible_child(self.html_container)
-        self.do_update_state()
+
+
+class RestructuredTextPluginConfig(GObject.Object, PeasGtk.Configurable):
+    def __init__(self):
+        super().__init__()
+
+    def do_create_configure_widget(self):
+        plugin_object = ReStructuredTextPlugin.instance
+        if plugin_object is None:
+            log.error("No plugin object instance found even though the plugin "
+                      "configuration panel is being opened")
+        config_widget = RestructuredtextConfigWidget(plugin_object)
+        return config_widget.configure_widget()
+
 
 # ex:et:ts=4:
