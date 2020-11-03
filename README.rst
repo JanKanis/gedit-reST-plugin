@@ -110,15 +110,30 @@ this more easy than ever.  Your contribution is appreciated!
 
 
 .. _July 4, 2014 version:
-    https://github.com/bittner/gedit-reST-plugin/blob/64070843f637aad78f3be4b85478e7e1174a7bca/README.rst#shortcuts
+    https://github.com/bittner/gedit-reST-plugin/blob/6407084/README.rst#shortcuts
 
 Contributing
 ------------
 
+Please run ``flake8`` and, optionally, ``pylint`` to ensure your contribution
+adheres to our coding style.
+
+Please compile the `GSettings`_ schema if you make schema changes: (`DTD`_)
+
+.. code-block:: console
+
+    glib-compile-schemas reST/schemas/
+
+**Resources:**
+
 - `API docs`_ for gedit plugin development
+- `GNOME discussion forum`_ for a helpful crowd
 
 
+.. _GSettings: https://developer.gnome.org/gio/stable/GSettings.html#GSettings.description
+.. _DTD: https://gitlab.gnome.org/GNOME/glib/-/blob/master/gio/gschema.dtd
 .. _API docs: https://wiki.gnome.org/Apps/Gedit/PythonPluginHowTo#api-gedit-panel
+.. _GNOME discussion forum: https://discourse.gnome.org/
 
 Alternatives
 ------------
