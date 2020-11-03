@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-__init__.py - HTML preview for reStructuredText (.rst) plugin
+HTML preview for reStructuredText (.rst) plugin
 """
 # Copyright (C) 2014-2018 - Peter Bittner
 #
@@ -31,8 +31,9 @@ from gi.repository import GObject, Gedit, PeasGtk
 from .config import RestructuredtextConfigWidget, Settings
 from .restructuredtext import RestructuredtextHtmlContainer
 
-
+logging.basicConfig()
 log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
 
 
 class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
@@ -55,7 +56,7 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
         self.html_container = None
 
     def do_activate(self):
-        log.debug("panel index: %s", Settings.get().get_panel_index())
+        log.debug("panel: %s", Settings.get().get_panel_name())
         self.display_panel = self.get_panel()
         self.html_container = RestructuredtextHtmlContainer(
             self.window, self.display_panel)
@@ -67,14 +68,16 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
         Settings.get().connect(self.on_panel_setting_change)
 
     def get_panel(self):
-        panel_name = Settings.get().get_panel()
-        if panel_name == 'side':
-            return self.window.get_side_panel()
-        elif panel_name == 'bottom':
-            return self.window.get_bottom_panel()
-        else:
-            raise AssertionError(f"got unsupported panel name {panel_name}, "
-                                 f"expecting 'side' or 'bottom'")
+        panels = {
+            'bottom-panel': self.window.get_bottom_panel,
+            'side-panel': self.window.get_side_panel,
+        }
+        panel_name = Settings.get().get_panel_name()
+        try:
+            return panels[panel_name]()
+        except KeyError:
+            raise RuntimeError("Got unsupported panel name %s, "
+                               "expected 'side' or 'bottom'" % panel_name)
 
     def add_container_to_panel(self):
         panel_name = 'GeditReStructuredTextPanel'
@@ -109,7 +112,7 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
         new_panel = self.get_panel()
         if new_panel is self.display_panel:
             return
-        log.debug("Panel changed to '%s'", Settings.get().get_panel())
+        log.debug("Panel changed to '%s'", Settings.get().get_panel_name())
 
         self.remove_container_from_panel()
 
@@ -133,6 +136,5 @@ class RestructuredTextPluginConfig(GObject.Object, PeasGtk.Configurable):
                       "configuration panel is being opened")
         config_widget = RestructuredtextConfigWidget(plugin_object)
         return config_widget.configure_widget()
-
 
 # ex:et:ts=4:

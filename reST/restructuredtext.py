@@ -28,7 +28,6 @@ from os.path import abspath, dirname, join
 from gi.repository import GLib, Gtk, WebKit2
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.INFO)
 
 
 class State(Enum):
@@ -215,7 +214,7 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
         script = ''
         log.debug("last_position: %s", self.last_position)
         if self.state == State.REST and self.last_position:
-            script = f"<script>window.scroll({self.last_position})</script>\n"
+            script = "<script>window.scroll(%s)</script>" % self.last_position
             log.debug("restoring position in new html")
         document = self.TEMPLATE.format(
             body=args.html, css=self.styles, scripts=script)
@@ -228,6 +227,7 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
     def clear_view(self):
         self.state = State.EXIT
         log.debug("state = EXIT")
+
         # Break potential reference cycle
         self.parent_window, self.panel = None, None
         self.event.set()
@@ -240,7 +240,7 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
             log.debug("reST preview rendering thread id: %s", tid)
 
             # Set nice +10 and SCHED_BATCH on this thread
-            code = os.system(f'schedtool -n 10 -B {tid}') % 255
+            code = os.system('schedtool -n 10 -B %s' % tid) % 255
             if code == 127:
                 log.info("'schedtool' command not found. Install 'schedtool' "
                          "to run reST preview rendering with adjusted "

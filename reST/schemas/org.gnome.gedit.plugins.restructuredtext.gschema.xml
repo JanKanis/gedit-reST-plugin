@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-	<schema id="org.gnome.gedit.plugins.restructuredtext" path="/org/gnome/gedit/plugins/restructuredtext/">
-		<key name="preview-panel" type="i">
-			<default>0</default>
+	<schema id="com.github.bittner.gedit-rest-plugin" path="/org/gnome/gedit/plugins/restructuredtext/">
+		<key name="preview-panel" type="s">
+			<choices>
+				<choice value="bottom-panel"/>
+				<choice value="side-panel"/>
+			</choices>
+			<default>"bottom-panel"</default>
 			<summary>Document preview location</summary>
-			<description>The editor panel where the document preview should be rendered: 0 = bottom, 1 = side</description>
+			<description>Where in the gedit window the document preview should be displayed</description>
 		</key>
 	</schema>
 </schemalist>
