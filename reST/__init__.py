@@ -61,8 +61,7 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
         self.html_container = RestructuredtextHtmlContainer(
             self.window, self.display_panel)
         self.add_container_to_panel()
-        self.html_container.show_now()
-        self.display_panel.show_now()
+        self.html_container.show()
         self.html_container.update_view()
 
         Settings.get().connect(self.on_panel_setting_change)
@@ -91,10 +90,12 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
             self.display_panel.add_item(self.html_container, panel_name,
                                         panel_title)
         self.html_container.set_panel(self.display_panel)
+        self.display_panel.connect("notify::visible", self.do_update_state)
         self.display_panel.connect("notify::visible-child",
                                    self.do_update_state)
 
     def remove_container_from_panel(self):
+        self.display_panel.disconnect_by_func(self.do_update_state)
         self.display_panel.disconnect_by_func(self.do_update_state)
         self.display_panel.remove(self.html_container)
 
