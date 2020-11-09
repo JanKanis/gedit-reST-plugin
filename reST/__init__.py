@@ -101,9 +101,9 @@ class ReStructuredTextPlugin(GObject.Object, Gedit.WindowActivatable):
 
     def do_deactivate(self):
         self.html_container.clear_view()
-        self.display_panel.remove(self.html_container)
-        self.display_panel.disconnect_by_func(self.do_update_state)
+        self.remove_container_from_panel()
         Settings.get().disconnect_by_func(self.on_panel_setting_change)
+        self.html_container.destroy()
         ReStructuredTextPlugin.instance = None
 
     def do_update_state(self, *ignored):
