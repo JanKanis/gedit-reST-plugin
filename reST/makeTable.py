@@ -113,9 +113,9 @@ def toRSTtable(rows, header=True, vdelim="  ", padding=2, justify='center'):
     return "\n".join(result)
 
 if __name__ == '__main__':
-    labels = ('IOMode','Peut écrire ?','Peut lire ?','Position de départ', 'Notes')
+    labels = (u'IOMode',u'Peut écrire ?',u'Peut lire ?',u'Position de départ', u'Notes')
     data = \
-    '''ReadMode,Oui,Non,Début de fichier,Le fichier doit déjà exister
+    u'''ReadMode,Oui,Non,Début de fichier,Le fichier doit déjà exister
 WriteMode,Non,Oui,Début de fichier,Le fichier est effacé s'il existe déjà
 ReadWriteMode,Oui,Oui,Début de fichier,Le fichier est créé s'il n'existe pas. Sinon son contenu est gardé intact'''
     rows = [row.strip().split(',')  for row in data.splitlines()]
