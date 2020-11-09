@@ -33,8 +33,7 @@ log = logging.getLogger(__name__)
 class State(Enum):
     NON_REST = 1
     REST = 2
-    SELECTION = 3
-    EXIT = 4
+    EXIT = 3
 
 
 class PreviewArgs:
@@ -109,6 +108,10 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
         self.view.show()
 
     def hide_view(self):
+        """
+        Hides the webview, if it has started.
+        Hiding the webview improves responsiveness if the html document is big
+        """
         if self.viewinit:
             self.view.hide()
 
@@ -137,25 +140,18 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
                 language = source_language.get_name()
 
         if language == 'reStructuredText':
+            self.state = State.REST
+            log.debug("state = REST")
             doc = view.get_buffer()
-            if doc.get_selection_bounds():
-                self.state = State.SELECTION
-                log.debug("state = SELECTION")
-                start = doc.get_iter_at_mark(doc.get_insert())
-                end = doc.get_iter_at_mark(doc.get_selection_bound())
-            else:
-                self.state = State.REST
-                log.debug("state = REST")
-                start = doc.get_start_iter()
-                end = doc.get_end_iter()
-
-            text = doc.get_text(start, end, False)
+            text = doc.get_text(doc.get_start_iter(), doc.get_end_iter(),
+                                include_hidden_chars=False)
 
             with self.lock:
                 self.preview_args = PreviewArgs(text=text,
                                                 html_type=self.state)
             # Only start the background thread once there is idle time,
-            # otherwise it can hold the GIL for too long, blocking the editor.
+            # otherwise it can hold the GIL for too long, hindering
+            # editor responsiveness.
             GLib.idle_add(self.set_event)
         else:
             self.state = State.NON_REST
