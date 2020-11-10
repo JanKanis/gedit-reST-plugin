@@ -56,17 +56,8 @@ the bottom of the editor window make it visible via *View > Bottom Panel*.
 If you use the side panel operate the drop-down selector on top of it
 to switch between *Documents* view and *reStructuredText*.
 
-Features
-########
-
-:Selection:
-    You can select some text to render only the selected portion of the
-    document. If there's no selection, the entire document is processed.
-
-    You may find this useful for trouble-shooting markup directives.
-
-Broken Features
-###############
+Features (broken)
+#################
 
 ➜ *Please contribute to bring these features back in the new implementation!*
 

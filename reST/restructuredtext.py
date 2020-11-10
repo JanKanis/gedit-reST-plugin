@@ -75,12 +75,10 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
         # It is updated when the text area updates.
         self.state = State.NON_REST
 
-        # To restore scroll positions after redrawing the preview, and across
-        # selecting text. Contains the most recent position when we were
-        # showing a (non-selection) reST preview.
+        # To restore scroll positions after redrawing the preview. Contains
+        # the most recent position when we were showing a reST preview.
         self.last_position = None
-        # indicates if the preview panel currently contains a reST (non-
-        # selection) preview
+        # indicates if the preview panel currently contains a reST preview
         self.scroll_position_valid = False
 
         module_dir = dirname(abspath(__file__))
@@ -203,7 +201,7 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
             return
 
         base_uri = ''
-        if self.state in [State.REST, State.SELECTION]:
+        if self.state == State.REST:
             location = self.parent_window.get_active_document().get_location()
             base_uri = location.get_uri() if location else ''
 
