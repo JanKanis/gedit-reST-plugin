@@ -202,7 +202,8 @@ class RestructuredtextHtmlContainer(Gtk.ScrolledWindow):
 
         base_uri = ''
         if self.state == State.REST:
-            location = self.parent_window.get_active_document().get_location()
+            location = self.parent_window.get_active_document()\
+                .get_file().get_location()
             base_uri = location.get_uri() if location else ''
 
         script = ''
